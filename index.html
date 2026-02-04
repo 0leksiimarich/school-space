@@ -1,33 +1,46 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SchoolSpace</title>
-  <link rel="stylesheet" href="style.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolSpace</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="auth">
-    <input id="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button id="login">Login</button>
-    <button id="register">Register</button>
-    <button id="google">Google</button>
-  </div>
-
-  <div id="app" hidden>
-    <button id="logout">Logout</button>
-
-    <div id="create">
-      <textarea id="text" placeholder="Що нового?"></textarea>
-      <input type="file" id="file"/>
-      <button id="post">Post</button>
+    <div id="auth-container" class="hidden">
+        <div class="card">
+            <h1>SchoolSpace</h1>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Пароль" required>
+                <button type="submit" id="btn-login">Увійти</button>
+                <button type="button" id="btn-register">Реєстрація</button>
+            </form>
+            <hr>
+            <button id="btn-google" class="google-btn">Увійти через Google</button>
+        </div>
     </div>
 
-    <div id="feed"></div>
-  </div>
+    <div id="app-container" class="hidden">
+        <nav>
+            <span class="logo">SchoolSpace</span>
+            <div class="nav-right">
+                <span id="user-display"></span>
+                <button id="btn-logout">Вийти</button>
+            </div>
+        </nav>
 
-  <script type="module" src="app.js"></script>
+        <main>
+            <section class="post-creator card">
+                <textarea id="post-text" placeholder="Що нового у школі?"></textarea>
+                <input type="file" id="post-file" accept="image/*,video/*">
+                <button id="btn-post">Опублікувати</button>
+            </section>
+
+            <div id="feed"></div>
+        </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>
