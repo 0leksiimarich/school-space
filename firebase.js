@@ -4,12 +4,13 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCAy9JPvV3v7J8mhqa7K1cotTWebmURgtI",
+  authDomain: "schoolspace-53f0d.firebaseapp.com",
+  projectId: "schoolspace-53f0d",
+  storageBucket: "schoolspace-53f0d.firebasestorage.app",
+  messagingSenderId: "832888496203",
+  appId: "1:832888496203:web:3377bfcd63cc277c86edce",
+  measurementId: "G-CCD219H76Y"
 };
 
 const app = initializeApp(firebaseConfig);
