@@ -4,156 +4,95 @@
     --bg: #fafafa;
     --white: #ffffff;
     --border: #dbdbdb;
-    --text-main: #262626;
-    --text-gray: #8e8e8e;
-    --link: #00376b;
+    --text: #262626;
+    --gray: #8e8e8e;
     --accent: #0095f6;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     background-color: var(--bg);
-    color: var(--text-main);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    -webkit-tap-highlight-color: transparent;
 }
 
 .hidden { display: none !important; }
 
-/* --- LOGIN SCREEN --- */
+/* --- AUTH PAGE --- */
 .modal-overlay {
-    background: var(--bg);
     position: fixed; top: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    z-index: 9999;
+    background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 2000;
 }
 
 .auth-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    padding: 40px 20px;
-    width: 350px;
-    text-align: center;
+    background: var(--white); border: 1px solid var(--border);
+    padding: 40px; width: 350px; text-align: center;
 }
 
-.inst-logo-big {
-    font-family: 'Lobster', cursive;
-    font-size: 42px;
-    margin-bottom: 30px;
+.inst-logo-big { font-family: 'Lobster', cursive; font-size: 38px; margin-bottom: 30px; }
+
+.auth-form input {
+    width: 100%; background: #fafafa; border: 1px solid var(--border);
+    padding: 10px; margin-bottom: 8px; border-radius: 3px; font-size: 14px;
 }
 
-.auth-card input {
-    width: 100%;
-    background: #fafafa;
-    border: 1px solid var(--border);
-    padding: 10px 8px;
-    margin-bottom: 8px;
-    border-radius: 3px;
-    font-size: 12px;
+.btn-inst-primary {
+    width: 100%; background: var(--accent); border: none; color: white;
+    padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 10px 0;
 }
 
-.btn-login-main {
-    width: 100%;
-    background: var(--accent);
-    border: none;
-    color: white;
-    padding: 7px;
-    border-radius: 4px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 10px 0;
+.btn-google-text {
+    background: none; border: none; color: #385185; font-weight: bold;
+    cursor: pointer; font-size: 14px; margin-top: 15px;
 }
 
 .divider {
-    display: flex; align-items: center; margin: 20px 0;
-    color: var(--text-gray); font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; color: var(--gray); font-size: 12px; margin: 20px 0;
 }
-.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 15px; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 10px; }
 
-/* --- MAIN LAYOUT --- */
+/* --- MAIN APP --- */
 .inst-header {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    height: 60px;
-    display: flex; justify-content: center; align-items: center;
-    position: sticky; top: 0; z-index: 1000;
+    background: var(--white); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; height: 60px; display: flex; justify-content: center; z-index: 1000;
 }
 
-.header-content {
+.header-inner {
     width: 100%; max-width: 975px; padding: 0 20px;
     display: flex; justify-content: space-between; align-items: center;
 }
 
-.feed-container {
-    max-width: 470px; /* Стандартна ширина стрічки Instagram */
-    margin: 30px auto 80px;
+.inst-logo { font-family: 'Lobster', cursive; font-size: 24px; cursor: pointer; }
+
+.main-content { max-width: 470px; margin: 30px auto 80px; }
+
+/* --- POSTS --- */
+.post-card, .create-post-card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 15px;
 }
 
-/* --- POST CARD --- */
-.post-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 12px;
+.create-post-card { padding: 15px; }
+.cp-top { display: flex; gap: 10px; }
+.user-thumb { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+textarea { flex: 1; border: none; outline: none; resize: none; font-size: 16px; }
+
+.btn-publish {
+    background: none; border: none; color: var(--accent);
+    font-weight: bold; cursor: pointer; float: right; margin-top: 10px;
 }
 
-.post-header {
-    display: flex; align-items: center; padding: 12px;
-    justify-content: space-between;
-}
-
-.user-info { display: flex; align-items: center; gap: 10px; }
-.user-info img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
-.user-info b { font-size: 14px; cursor: pointer; }
-.user-info b:hover { color: var(--text-gray); }
-
-.post-content-text {
-    padding: 0 12px 12px;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.post-actions {
-    padding: 8px 12px;
-    display: flex; gap: 16px;
-}
-
-.post-actions i { font-size: 24px; cursor: pointer; transition: 0.2s; }
-.post-actions i:hover { color: var(--text-gray); }
-.fa-heart:hover { color: #ed4956; }
+.post-header { display: flex; align-items: center; padding: 12px; gap: 10px; }
+.post-content-text { padding: 0 12px 12px; font-size: 14px; line-height: 1.5; }
+.post-actions { padding: 8px 12px; display: flex; gap: 16px; font-size: 22px; }
 
 /* --- NAVIGATION --- */
 .bottom-nav {
-    position: fixed; bottom: 0; width: 100%;
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    display: flex; justify-content: space-around;
-    padding: 10px 0; z-index: 1000;
+    position: fixed; bottom: 0; width: 100%; height: 50px;
+    background: var(--white); border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around; align-items: center;
 }
 
-.nav-item {
-    background: none; border: none; font-size: 24px; color: var(--text-main);
-    cursor: pointer; padding: 5px 15px;
-}
-
-.nav-item.active { color: var(--accent); }
-
-/* --- CREATE POST AREA --- */
-.create-post {
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 8px; padding: 15px; margin-bottom: 20px;
-}
-
-.create-post textarea {
-    width: 100%; border: none; resize: none; outline: none;
-    font-size: 16px; font-family: inherit; margin-bottom: 10px;
-}
-
-.btn-post-publish {
-    background: none; border: none; color: var(--accent);
-    font-weight: 600; font-size: 14px; cursor: pointer; float: right;
-}
-
-.btn-post-publish:disabled { opacity: 0.3; }
+.nav-item { background: none; border: none; font-size: 22px; cursor: pointer; }
+.nav-thumb { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); }
