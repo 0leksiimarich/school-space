@@ -1,53 +1,53 @@
+/* Основні кольори X (Dark Mode) */
 :root {
     --bg: #000000;
-    --card: #16181c;
+    --card: #000000;
     --text: #eff3f4;
     --accent: #1d9bf0;
     --border: #2f3336;
     --gray: #71767b;
+    --white: #ffffff;
 }
 
 body {
-    background: var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
 
 .hidden { display: none !important; }
 
-/* Modal / Card Style */
+/* Авторизація (Модальне вікно) */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(91, 112, 131, 0.4);
     display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .auth-card {
     background: var(--bg);
     width: 100%;
     max-width: 600px;
-    min-height: 400px;
+    padding: 40px;
     border-radius: 16px;
-    padding: 32px;
-    position: relative;
     box-sizing: border-box;
 }
 
-.logo-x { font-size: 32px; text-align: center; margin-bottom: 20px; }
+.logo-x { font-size: 40px; text-align: center; margin-bottom: 20px; }
+h2 { font-size: 31px; font-weight: 700; margin-bottom: 30px; letter-spacing: -1px; }
 
-h2 { font-size: 31px; font-weight: 700; margin-bottom: 20px; }
-
-/* Form Elements */
-.input-group { margin-bottom: 15px; position: relative; }
-
+/* Форми */
+.input-group { margin-bottom: 15px; }
 input, select {
     width: 100%;
     background: transparent;
     border: 1px solid var(--border);
-    padding: 16px 8px;
+    padding: 16px;
     color: var(--text);
     border-radius: 4px;
     font-size: 17px;
@@ -56,42 +56,83 @@ input, select {
 
 input:focus { border-color: var(--accent); outline: none; }
 
-.row { display: flex; gap: 10px; margin-top: 10px; }
+.row { display: flex; gap: 10px; margin-bottom: 15px; }
+.row input, .row select { flex: 1; }
 
-/* Buttons */
+/* Кнопки */
 .btn-next {
-    background: var(--text);
-    color: var(--bg);
+    background: var(--accent);
+    color: var(--white);
     border: none;
     padding: 12px;
     border-radius: 9999px;
     font-weight: 700;
     width: 100%;
     cursor: pointer;
-    margin-top: 20px;
+    font-size: 17px;
+    margin-bottom: 12px;
 }
 
-.btn-next:disabled { opacity: 0.5; }
+.btn-white { background: var(--text); color: var(--bg); }
+.btn-text { background: transparent; color: var(--accent); border: none; cursor: pointer; width: 100%; padding: 10px; }
 
-/* Avatar Selection */
-.avatar-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.avatar-opt {
-    width: 60px; height: 60px;
-    border-radius: 50%;
+.btn-google {
+    background: var(--white);
+    color: #0f1419;
+    border: none;
+    padding: 12px;
+    border-radius: 9999px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
     cursor: pointer;
-    border: 3px solid transparent;
-    transition: 0.2s;
 }
 
+/* Навігація та Лэйаут */
+.top-nav {
+    position: sticky; top: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(12px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+}
+
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 10px 0;
+}
+
+.nav-item {
+    background: none; border: none; color: var(--gray);
+    display: flex; flex-direction: column; align-items: center; cursor: pointer;
+}
+.nav-item.active { color: var(--text); }
+.nav-item .icon { font-size: 24px; }
+.nav-item .label { font-size: 11px; }
+
+/* Стрічка та Профіль */
+#app-container { max-width: 600px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
+
+.post-box { padding: 15px; border-bottom: 1px solid var(--border); }
+.post-input-row { display: flex; gap: 12px; }
+.user-avatar-mini { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #333; }
+textarea { flex: 1; background: transparent; border: none; color: white; font-size: 20px; resize: none; outline: none; }
+
+.btn-tweet { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+
+/* Аватарки */
+.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.avatar-opt { width: 100%; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
 .avatar-opt.selected { border-color: var(--accent); }
 
-/* Layout for feed */
-nav { border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; justify-content: space-between; position: sticky; top: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
-.feed-container { max-width: 600px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
-.post-box { padding: 15px; border-bottom: 1px solid var(--border); }
+.profile-header { padding: 20px; text-align: center; }
+.large-avatar { width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--bg); margin-top: -40px; }
+.profile-cover { height: 120px; background: #333; width: 100%; }
