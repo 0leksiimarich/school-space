@@ -1,0 +1,33 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SchoolSpace</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="auth">
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="login">Login</button>
+    <button id="register">Register</button>
+    <button id="google">Google</button>
+  </div>
+
+  <div id="app" hidden>
+    <button id="logout">Logout</button>
+
+    <div id="create">
+      <textarea id="text" placeholder="Що нового?"></textarea>
+      <input type="file" id="file"/>
+      <button id="post">Post</button>
+    </div>
+
+    <div id="feed"></div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
