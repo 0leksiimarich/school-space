@@ -1,91 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
 :root {
-    --bg: #000000;
-    --text: #eff3f4;
-    --accent: #1d9bf0;
-    --border: #2f3336;
-    --gray: #71767b;
+    --inst-bg: #ffffff;
+    --inst-white: #ffffff;
+    --inst-border: #efefef;
+    --inst-accent: #0095f6;
+    --inst-text: #262626;
+    --inst-gray: #8e8e8e;
 }
 
 body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: sans-serif;
+    background-color: var(--inst-bg);
+    color: var(--inst-text);
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 0;
 }
 
+.inst-logo { font-family: 'Lobster', cursive; font-size: 26px; cursor: pointer; }
 .hidden { display: none !important; }
-.m-10 { margin: 10px 0; }
 
+/* Авторизація */
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(91, 112, 131, 0.4);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
+    background: #fff; position: fixed; top: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center; z-index: 1000;
+}
+.auth-card { border: 1px solid var(--inst-border); padding: 30px; width: 350px; text-align: center; }
+.auth-card input {
+    width: 100%; background: #fafafa; border: 1px solid var(--inst-border);
+    padding: 10px; margin-bottom: 5px; border-radius: 3px; font-size: 14px; box-sizing: border-box;
+}
+.btn-inst-primary {
+    width: 100%; background: var(--inst-accent); border: none; color: white;
+    padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
 }
 
-.auth-card {
-    background: var(--bg); width: 90%; max-width: 500px;
-    padding: 30px; border-radius: 16px; text-align: center;
+/* Шапка */
+.inst-header {
+    background: #fff; border-bottom: 1px solid var(--inst-border);
+    padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; z-index: 100;
 }
+.header-icons i { font-size: 22px; margin-left: 15px; }
 
-.logo-x { font-size: 40px; margin-bottom: 10px; }
+/* Стрічка */
+.inst-main { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
 
-input, select {
-    width: 100%; background: transparent; border: 1px solid var(--border);
-    padding: 12px; color: white; border-radius: 4px; margin: 5px 0;
-    box-sizing: border-box;
+.create-post-mini {
+    padding: 15px; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--inst-border);
 }
+.create-post-mini img { width: 36px; height: 36px; border-radius: 50%; }
+.create-post-mini textarea { flex: 1; border: none; outline: none; font-size: 16px; resize: none; }
+.create-post-mini button { color: var(--inst-accent); background: none; border: none; font-weight: bold; cursor: pointer; }
 
-.row { display: flex; gap: 5px; }
-
-.btn-next {
-    background: var(--accent); color: white; border: none;
-    padding: 12px; border-radius: 99px; width: 100%;
-    font-weight: bold; cursor: pointer; margin-top: 10px;
-}
-
-.btn-white { background: white; color: black; }
-.btn-text { background: transparent; color: var(--accent); border: none; cursor: pointer; margin-top: 10px; }
-
-.btn-google {
-    background: white; color: black; border: none; padding: 10px;
-    border-radius: 99px; width: 100%; display: flex; align-items: center;
-    justify-content: center; gap: 10px; font-weight: bold; cursor: pointer;
-}
-
-.divider { margin: 15px 0; color: var(--gray); }
+/* Пости */
+.feed-item { background: #fff; border-bottom: 8px solid #f2f2f2; }
+.post-header { display: flex; align-items: center; padding: 12px; gap: 10px; }
+.post-header img { width: 32px; height: 32px; border-radius: 50%; }
+.post-header b { font-size: 14px; }
+.post-content { padding: 0 12px 15px; font-size: 15px; line-height: 1.5; }
+.post-actions { padding: 0 12px 10px; display: flex; gap: 15px; font-size: 20px; }
 
 /* Навігація */
-.top-nav {
-    position: sticky; top: 0; background: rgba(0,0,0,0.8);
-    display: flex; justify-content: space-between; padding: 10px 20px;
-    border-bottom: 1px solid var(--border); z-index: 10;
+.inst-nav {
+    position: fixed; bottom: 0; width: 100%; background: #fff;
+    border-top: 1px solid var(--inst-border); display: flex; justify-content: space-around;
+    padding: 12px 0;
 }
+.nav-btn { background: none; border: none; font-size: 22px; cursor: pointer; }
+.nav-av { width: 24px; height: 24px; border-radius: 50%; }
 
-.bottom-nav {
-    position: fixed; bottom: 0; width: 100%; background: black;
-    border-top: 1px solid var(--border); display: flex; justify-content: space-around;
-    padding: 10px 0;
-}
+/* Профіль */
+.profile-top { display: flex; padding: 20px; gap: 30px; align-items: center; }
+.inst-profile-av { width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--inst-border); }
+.btn-edit-prof { border: 1px solid var(--inst-border); background: #efefef; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+.profile-bio { padding: 0 20px 20px; font-size: 14px; }
 
-.nav-item { background: none; border: none; color: var(--gray); cursor: pointer; text-align: center; }
-.nav-item.active { color: var(--accent); }
-.nav-item .icon { display: block; font-size: 20px; }
-.nav-item .label { font-size: 10px; }
-
-#app-container { max-width: 600px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
-
-.post-box { padding: 15px; border-bottom: 1px solid var(--border); }
-.post-input-row { display: flex; gap: 10px; }
-.user-avatar-mini { width: 40px; height: 40px; border-radius: 50%; }
-textarea { flex: 1; background: transparent; border: none; color: white; font-size: 18px; resize: none; outline: none; }
-.post-actions { display: flex; justify-content: flex-end; }
-.btn-tweet { background: var(--accent); color: white; border: none; padding: 8px 20px; border-radius: 99px; font-weight: bold; }
-
-.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+.avatar-selection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
 .avatar-opt { width: 100%; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-.avatar-opt.selected { border-color: var(--accent); }
-
-.profile-header { text-align: center; padding-bottom: 20px; }
-.profile-cover { height: 100px; background: #333; }
-.large-avatar { width: 80px; height: 80px; border-radius: 50%; margin-top: -40px; border: 3px solid black; }
+.avatar-opt.selected { border-color: var(--inst-accent); }
