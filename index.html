@@ -3,38 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace</title>
+    <title>SchoolSpace | Нова Освітня Мережа</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="auth-container" class="hidden">
-        <div class="card">
-            <h1>SchoolSpace</h1>
+        <div class="card" style="width: 100%; max-width: 400px;">
+            <div class="logo-container" style="justify-content: center; margin-bottom: 30px;">
+                <div class="school-icon">🏫</div>
+                <h1 style="margin:0; font-weight: 700;">SchoolSpace</h1>
+            </div>
             <form id="login-form">
-                <input type="email" id="email" placeholder="Email" required>
+                <input type="email" id="email" placeholder="Електронна пошта" required>
                 <input type="password" id="password" placeholder="Пароль" required>
-                <button type="submit" id="btn-login">Увійти</button>
-                <button type="button" id="btn-register">Реєстрація</button>
+                <button type="submit" id="btn-login">Увійти в систему</button>
+                <button type="button" id="btn-register" style="background: transparent; color: var(--primary); box-shadow: none;">Створити новий акаунт</button>
             </form>
-            <hr>
-            <button id="btn-google" class="google-btn">Увійти через Google</button>
+            <div style="text-align: center; margin: 20px 0; color: #64748b;">або</div>
+            <button id="btn-google" class="google-btn" style="background: #fff; color: #444; width: 100%; border: 1px solid #ddd;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" style="vertical-align: middle; margin-right: 8px;">
+                Увійти з Google
+            </button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         <nav>
-            <span class="logo">SchoolSpace</span>
-            <div class="nav-right">
-                <span id="user-display"></span>
-                <button id="btn-logout">Вийти</button>
+            <div class="logo-container">
+                <div class="school-icon">🏫</div>
+                <span style="font-weight: 700; font-size: 1.2rem; color: var(--text);">SchoolSpace</span>
+            </div>
+            <div class="nav-right" style="display: flex; align-items: center; gap: 20px;">
+                <span id="user-display" style="font-weight: 600; color: #475569;"></span>
+                <button id="btn-logout" style="padding: 8px 16px; background: #fee2e2; color: #ef4444; box-shadow: none;">Вийти</button>
             </div>
         </nav>
 
         <main>
-            <section class="post-creator card">
-                <textarea id="post-text" placeholder="Що нового у школі?"></textarea>
-                <input type="file" id="post-file" accept="image/*,video/*">
-                <button id="btn-post">Опублікувати</button>
+            <section class="card post-creator">
+                <div style="display: flex; gap: 15px;">
+                    <div class="avatar-placeholder">?</div>
+                    <textarea id="post-text" placeholder="Поділися новинами з однокласниками..." style="flex: 1; min-height: 100px;"></textarea>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <label class="file-label" style="cursor: pointer; color: var(--primary); font-weight: 600;">
+                        <input type="file" id="post-file" accept="image/*,video/*" style="display: none;">
+                        📎 Додати фото/відео
+                    </label>
+                    <button id="btn-post" style="padding: 10px 30px;">Опублікувати</button>
+                </div>
             </section>
 
             <div id="feed"></div>
