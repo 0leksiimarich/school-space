@@ -1,81 +1,159 @@
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 
 :root {
-    --inst-bg: #ffffff;
-    --inst-white: #ffffff;
-    --inst-border: #efefef;
-    --inst-accent: #0095f6;
-    --inst-text: #262626;
-    --inst-gray: #8e8e8e;
+    --bg: #fafafa;
+    --white: #ffffff;
+    --border: #dbdbdb;
+    --text-main: #262626;
+    --text-gray: #8e8e8e;
+    --link: #00376b;
+    --accent: #0095f6;
 }
+
+* { box-sizing: border-box; }
 
 body {
-    background-color: var(--inst-bg);
-    color: var(--inst-text);
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.inst-logo { font-family: 'Lobster', cursive; font-size: 26px; cursor: pointer; }
 .hidden { display: none !important; }
 
-/* Авторизація */
+/* --- LOGIN SCREEN --- */
 .modal-overlay {
-    background: #fff; position: fixed; top: 0; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center; z-index: 1000;
+    background: var(--bg);
+    position: fixed; top: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 9999;
 }
-.auth-card { border: 1px solid var(--inst-border); padding: 30px; width: 350px; text-align: center; }
+
+.auth-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 40px 20px;
+    width: 350px;
+    text-align: center;
+}
+
+.inst-logo-big {
+    font-family: 'Lobster', cursive;
+    font-size: 42px;
+    margin-bottom: 30px;
+}
+
 .auth-card input {
-    width: 100%; background: #fafafa; border: 1px solid var(--inst-border);
-    padding: 10px; margin-bottom: 5px; border-radius: 3px; font-size: 14px; box-sizing: border-box;
-}
-.btn-inst-primary {
-    width: 100%; background: var(--inst-accent); border: none; color: white;
-    padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
+    width: 100%;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    padding: 10px 8px;
+    margin-bottom: 8px;
+    border-radius: 3px;
+    font-size: 12px;
 }
 
-/* Шапка */
+.btn-login-main {
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 7px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.divider {
+    display: flex; align-items: center; margin: 20px 0;
+    color: var(--text-gray); font-size: 13px; font-weight: 600;
+}
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); margin: 0 15px; }
+
+/* --- MAIN LAYOUT --- */
 .inst-header {
-    background: #fff; border-bottom: 1px solid var(--inst-border);
-    padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;
-    position: sticky; top: 0; z-index: 100;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    height: 60px;
+    display: flex; justify-content: center; align-items: center;
+    position: sticky; top: 0; z-index: 1000;
 }
-.header-icons i { font-size: 22px; margin-left: 15px; }
 
-/* Стрічка */
-.inst-main { max-width: 600px; margin: 0 auto; padding-bottom: 60px; }
-
-.create-post-mini {
-    padding: 15px; display: flex; align-items: center; gap: 10px;
-    border-bottom: 1px solid var(--inst-border);
+.header-content {
+    width: 100%; max-width: 975px; padding: 0 20px;
+    display: flex; justify-content: space-between; align-items: center;
 }
-.create-post-mini img { width: 36px; height: 36px; border-radius: 50%; }
-.create-post-mini textarea { flex: 1; border: none; outline: none; font-size: 16px; resize: none; }
-.create-post-mini button { color: var(--inst-accent); background: none; border: none; font-weight: bold; cursor: pointer; }
 
-/* Пости */
-.feed-item { background: #fff; border-bottom: 8px solid #f2f2f2; }
-.post-header { display: flex; align-items: center; padding: 12px; gap: 10px; }
-.post-header img { width: 32px; height: 32px; border-radius: 50%; }
-.post-header b { font-size: 14px; }
-.post-content { padding: 0 12px 15px; font-size: 15px; line-height: 1.5; }
-.post-actions { padding: 0 12px 10px; display: flex; gap: 15px; font-size: 20px; }
-
-/* Навігація */
-.inst-nav {
-    position: fixed; bottom: 0; width: 100%; background: #fff;
-    border-top: 1px solid var(--inst-border); display: flex; justify-content: space-around;
-    padding: 12px 0;
+.feed-container {
+    max-width: 470px; /* Стандартна ширина стрічки Instagram */
+    margin: 30px auto 80px;
 }
-.nav-btn { background: none; border: none; font-size: 22px; cursor: pointer; }
-.nav-av { width: 24px; height: 24px; border-radius: 50%; }
 
-/* Профіль */
-.profile-top { display: flex; padding: 20px; gap: 30px; align-items: center; }
-.inst-profile-av { width: 80px; height: 80px; border-radius: 50%; border: 1px solid var(--inst-border); }
-.btn-edit-prof { border: 1px solid var(--inst-border); background: #efefef; padding: 5px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
-.profile-bio { padding: 0 20px 20px; font-size: 14px; }
+/* --- POST CARD --- */
+.post-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
 
-.avatar-selection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-.avatar-opt { width: 100%; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-.avatar-opt.selected { border-color: var(--inst-accent); }
+.post-header {
+    display: flex; align-items: center; padding: 12px;
+    justify-content: space-between;
+}
+
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-info img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+.user-info b { font-size: 14px; cursor: pointer; }
+.user-info b:hover { color: var(--text-gray); }
+
+.post-content-text {
+    padding: 0 12px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.post-actions {
+    padding: 8px 12px;
+    display: flex; gap: 16px;
+}
+
+.post-actions i { font-size: 24px; cursor: pointer; transition: 0.2s; }
+.post-actions i:hover { color: var(--text-gray); }
+.fa-heart:hover { color: #ed4956; }
+
+/* --- NAVIGATION --- */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 10px 0; z-index: 1000;
+}
+
+.nav-item {
+    background: none; border: none; font-size: 24px; color: var(--text-main);
+    cursor: pointer; padding: 5px 15px;
+}
+
+.nav-item.active { color: var(--accent); }
+
+/* --- CREATE POST AREA --- */
+.create-post {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; padding: 15px; margin-bottom: 20px;
+}
+
+.create-post textarea {
+    width: 100%; border: none; resize: none; outline: none;
+    font-size: 16px; font-family: inherit; margin-bottom: 10px;
+}
+
+.btn-post-publish {
+    background: none; border: none; color: var(--accent);
+    font-weight: 600; font-size: 14px; cursor: pointer; float: right;
+}
+
+.btn-post-publish:disabled { opacity: 0.3; }
