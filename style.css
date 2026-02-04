@@ -1,138 +1,91 @@
-/* Основні кольори X (Dark Mode) */
 :root {
     --bg: #000000;
-    --card: #000000;
     --text: #eff3f4;
     --accent: #1d9bf0;
     --border: #2f3336;
     --gray: #71767b;
-    --white: #ffffff;
 }
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: sans-serif;
     margin: 0;
-    padding: 0;
-    overflow-x: hidden;
 }
 
 .hidden { display: none !important; }
+.m-10 { margin: 10px 0; }
 
-/* Авторизація (Модальне вікно) */
 .modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(91, 112, 131, 0.4);
     display: flex; align-items: center; justify-content: center;
-    z-index: 2000;
+    z-index: 1000;
 }
 
 .auth-card {
-    background: var(--bg);
-    width: 100%;
-    max-width: 600px;
-    padding: 40px;
-    border-radius: 16px;
-    box-sizing: border-box;
+    background: var(--bg); width: 90%; max-width: 500px;
+    padding: 30px; border-radius: 16px; text-align: center;
 }
 
-.logo-x { font-size: 40px; text-align: center; margin-bottom: 20px; }
-h2 { font-size: 31px; font-weight: 700; margin-bottom: 30px; letter-spacing: -1px; }
+.logo-x { font-size: 40px; margin-bottom: 10px; }
 
-/* Форми */
-.input-group { margin-bottom: 15px; }
 input, select {
-    width: 100%;
-    background: transparent;
-    border: 1px solid var(--border);
-    padding: 16px;
-    color: var(--text);
-    border-radius: 4px;
-    font-size: 17px;
+    width: 100%; background: transparent; border: 1px solid var(--border);
+    padding: 12px; color: white; border-radius: 4px; margin: 5px 0;
     box-sizing: border-box;
 }
 
-input:focus { border-color: var(--accent); outline: none; }
+.row { display: flex; gap: 5px; }
 
-.row { display: flex; gap: 10px; margin-bottom: 15px; }
-.row input, .row select { flex: 1; }
-
-/* Кнопки */
 .btn-next {
-    background: var(--accent);
-    color: var(--white);
-    border: none;
-    padding: 12px;
-    border-radius: 9999px;
-    font-weight: 700;
-    width: 100%;
-    cursor: pointer;
-    font-size: 17px;
-    margin-bottom: 12px;
+    background: var(--accent); color: white; border: none;
+    padding: 12px; border-radius: 99px; width: 100%;
+    font-weight: bold; cursor: pointer; margin-top: 10px;
 }
 
-.btn-white { background: var(--text); color: var(--bg); }
-.btn-text { background: transparent; color: var(--accent); border: none; cursor: pointer; width: 100%; padding: 10px; }
+.btn-white { background: white; color: black; }
+.btn-text { background: transparent; color: var(--accent); border: none; cursor: pointer; margin-top: 10px; }
 
 .btn-google {
-    background: var(--white);
-    color: #0f1419;
-    border: none;
-    padding: 12px;
-    border-radius: 9999px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-weight: 600;
-    cursor: pointer;
+    background: white; color: black; border: none; padding: 10px;
+    border-radius: 99px; width: 100%; display: flex; align-items: center;
+    justify-content: center; gap: 10px; font-weight: bold; cursor: pointer;
 }
 
-/* Навігація та Лэйаут */
+.divider { margin: 15px 0; color: var(--gray); }
+
+/* Навігація */
 .top-nav {
-    position: sticky; top: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(12px);
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    z-index: 100;
+    position: sticky; top: 0; background: rgba(0,0,0,0.8);
+    display: flex; justify-content: space-between; padding: 10px 20px;
+    border-bottom: 1px solid var(--border); z-index: 10;
 }
 
 .bottom-nav {
-    position: fixed; bottom: 0; width: 100%;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
-    display: flex; justify-content: space-around;
+    position: fixed; bottom: 0; width: 100%; background: black;
+    border-top: 1px solid var(--border); display: flex; justify-content: space-around;
     padding: 10px 0;
 }
 
-.nav-item {
-    background: none; border: none; color: var(--gray);
-    display: flex; flex-direction: column; align-items: center; cursor: pointer;
-}
-.nav-item.active { color: var(--text); }
-.nav-item .icon { font-size: 24px; }
-.nav-item .label { font-size: 11px; }
+.nav-item { background: none; border: none; color: var(--gray); cursor: pointer; text-align: center; }
+.nav-item.active { color: var(--accent); }
+.nav-item .icon { display: block; font-size: 20px; }
+.nav-item .label { font-size: 10px; }
 
-/* Стрічка та Профіль */
 #app-container { max-width: 600px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
 
 .post-box { padding: 15px; border-bottom: 1px solid var(--border); }
-.post-input-row { display: flex; gap: 12px; }
-.user-avatar-mini { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #333; }
-textarea { flex: 1; background: transparent; border: none; color: white; font-size: 20px; resize: none; outline: none; }
+.post-input-row { display: flex; gap: 10px; }
+.user-avatar-mini { width: 40px; height: 40px; border-radius: 50%; }
+textarea { flex: 1; background: transparent; border: none; color: white; font-size: 18px; resize: none; outline: none; }
+.post-actions { display: flex; justify-content: flex-end; }
+.btn-tweet { background: var(--accent); color: white; border: none; padding: 8px 20px; border-radius: 99px; font-weight: bold; }
 
-.btn-tweet { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 999px; font-weight: 700; cursor: pointer; }
-
-/* Аватарки */
-.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
 .avatar-opt { width: 100%; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
 .avatar-opt.selected { border-color: var(--accent); }
 
-.profile-header { padding: 20px; text-align: center; }
-.large-avatar { width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--bg); margin-top: -40px; }
-.profile-cover { height: 120px; background: #333; width: 100%; }
+.profile-header { text-align: center; padding-bottom: 20px; }
+.profile-cover { height: 100px; background: #333; }
+.large-avatar { width: 80px; height: 80px; border-radius: 50%; margin-top: -40px; border: 3px solid black; }
