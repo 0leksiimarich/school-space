@@ -1,0 +1,15 @@
+{
+  "name": "SchoolSpace",
+  "short_name": "SchoolSpace",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#eef2f7",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/167/167707.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
