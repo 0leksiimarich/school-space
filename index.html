@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SchoolSpace | Твоя шкільна мережа</title>
+    <title>SchoolSpace</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,17 +13,15 @@
             <div class="logo-x">🏫</div>
             
             <div id="auth-initial">
-                <h2>Приєднуйся до SchoolSpace сьогодні</h2>
-                <form id="login-form">
-                    <div class="input-group">
-                        <input type="email" id="email" placeholder="Електронна пошта" required>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" id="password" placeholder="Пароль" required>
-                    </div>
-                    <button type="submit" class="btn-next">Увійти</button>
-                    <button type="button" class="btn-next btn-white" onclick="showStep(1)">Створити акаунт</button>
-                </form>
+                <h2>Приєднуйся до SchoolSpace</h2>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Електронна пошта">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Пароль">
+                </div>
+                <button id="btn-login" class="btn-next">Увійти</button>
+                <button class="btn-next btn-white" onclick="showStep(1)">Створити акаунт</button>
                 <div class="divider">або</div>
                 <button id="btn-google" class="btn-google">
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
@@ -32,35 +30,81 @@
             </div>
 
             <div id="step-1" class="hidden">
-                <h2>Створи свій профіль</h2>
-                <div class="input-group"><input type="text" id="reg-name" placeholder="Твоє ім'я та прізвище"></div>
+                <h2>Профіль</h2>
+                <input type="text" id="reg-name" placeholder="Ім'я та прізвище" class="m-10">
                 <div class="row">
                     <input type="text" id="reg-city" placeholder="Місто">
                     <input type="text" id="reg-school" placeholder="Школа №">
                     <input type="text" id="reg-class" placeholder="Клас">
-                </div>
-                <p class="gray-text" style="margin-top: 20px;">Дата народження</p>
-                <div class="row">
-                    <select id="birth-day"><option value="">День</option></select>
-                    <select id="birth-month">
-                        <option value="">Місяць</option>
-                        <option value="01">Січень</option>
-                        <option value="02">Лютий</option>
-                        <option value="03">Березень</option>
-                        <option value="04">Квітень</option>
-                        <option value="05">Травень</option>
-                        <option value="06">Червень</option>
-                        <option value="07">Липень</option>
-                        <option value="08">Серпень</option>
-                        <option value="09">Вересень</option>
-                        <option value="10">Жовтень</option>
-                        <option value="11">Листопад</option>
-                        <option value="12">Грудень</option>
-                    </select>
-                    <select id="birth-year"><option value="">Рік</option></select>
                 </div>
                 <button class="btn-next" onclick="showStep(2)">Далі</button>
                 <button class="btn-text" onclick="location.reload()">Назад</button>
             </div>
 
             <div id="step-2" class="hidden">
+                <h2>Аватар та пароль</h2>
+                <div class="avatar-grid" id="avatar-list"></div>
+                <input type="password" id="reg-pass" placeholder="Пароль (від 6 символів)" class="m-10">
+                <button class="btn-next" id="btn-finish-reg">Зареєструватися</button>
+                <button class="btn-text" onclick="showStep(1)">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <header class="top-nav">
+            <div class="logo-area">
+                <span class="school-logo-sm">🏫</span>
+                <h2 id="page-title">Головна</h2>
+            </div>
+            <button id="btn-logout">🚪</button>
+        </header>
+
+        <main id="main-content">
+            <section id="page-feed" class="page">
+                <div class="post-box">
+                    <div class="post-input-row">
+                        <img src="" class="user-avatar-mini current-user-av">
+                        <textarea id="post-text" placeholder="Що цікавого?"></textarea>
+                    </div>
+                    <div class="post-actions">
+                        <button id="btn-post" class="btn-tweet">Пост</button>
+                    </div>
+                </div>
+                <div id="feed"></div>
+            </section>
+
+            <section id="page-messages" class="page hidden">
+                <div class="empty-state">
+                    <h3>Чати</h3>
+                    <p>Тут будуть твої повідомлення.</p>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page hidden">
+                <div class="profile-header">
+                    <div class="profile-cover"></div>
+                    <img src="" id="prof-avatar" class="large-avatar">
+                    <h2 id="prof-name">Завантаження...</h2>
+                    <p id="prof-info" class="gray-text"></p>
+                </div>
+                <div id="user-posts"></div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchPage('feed', this)">
+                <span class="icon">🏠</span><span class="label">Головна</span>
+            </button>
+            <button class="nav-item" onclick="switchPage('messages', this)">
+                <span class="icon">📩</span><span class="label">Чати</span>
+            </button>
+            <button class="nav-item" onclick="switchPage('profile', this)">
+                <span class="icon">👤</span><span class="label">Профіль</span>
+            </button>
+        </nav>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
