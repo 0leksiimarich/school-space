@@ -42,6 +42,17 @@ window.showStep = (step) => {
     else if (step === 2) document.getElementById('step-2').classList.remove('hidden');
 };
 
+window.switchPage = (pageId, btn) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`page-${pageId}`).classList.remove('hidden');
+    
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    const titles = { feed: 'Головна', messages: 'Повідомлення', profile: 'Профіль' };
+    document.getElementById('page-title').textContent = titles[pageId];
+};
+
 // Вхід
 document.getElementById('login-form').onsubmit = async (e) => {
     e.preventDefault();
