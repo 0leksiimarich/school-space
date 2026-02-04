@@ -1,0 +1,37 @@
+/* style.css */
+body {
+  font-family: sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 16px;
+}
+
+#auth, #create {
+  margin-bottom: 16px;
+}
+
+input, textarea, button {
+  display: block;
+  margin: 8px 0;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.post {
+  background: #fff;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+.post img, .post video {
+  max-width: 100%;
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
