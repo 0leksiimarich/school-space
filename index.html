@@ -3,83 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SchoolSpace</title>
+    <title>SchoolSpace | Instagram Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div id="auth-container" class="modal-overlay">
         <div class="auth-card">
-            <h1 class="inst-logo">SchoolSpace</h1>
+            <h1 class="inst-logo-big">SchoolSpace</h1>
+            
             <div id="auth-initial">
-                <input type="email" id="email" placeholder="Пошта">
-                <input type="password" id="password" placeholder="Пароль">
-                <button id="btn-login" class="btn-inst-primary">Увійти</button>
-                <div class="divider-line"><span>АБО</span></div>
-                <button id="btn-google" class="btn-google-link"><i class="fab fa-google"></i> Увійти з Google</button>
-                <p class="auth-footer">Немає акаунту? <a href="#" onclick="showStep(1)">Зареєструватися</a></p>
+                <div class="auth-form">
+                    <input type="email" id="email" placeholder="Електронна пошта">
+                    <input type="password" id="password" placeholder="Пароль">
+                    <button id="btn-login" class="btn-inst-primary">Увійти</button>
+                    
+                    <div class="divider"><span>АБО</span></div>
+                    
+                    <button id="btn-google" class="btn-google-text">
+                        <i class="fab fa-google"></i> Увійти через Google
+                    </button>
+                </div>
+                <div class="auth-switch">
+                    Немає акаунту? <a href="#" onclick="showStep(1)">Зареєструватися</a>
+                </div>
             </div>
 
             <div id="step-1" class="hidden">
-                <h3>Створення профілю</h3>
-                <input type="text" id="reg-name" placeholder="Повне ім'я">
+                <h3>Твій профіль</h3>
+                <input type="text" id="reg-name" placeholder="Ім'я та прізвище">
                 <input type="text" id="reg-city" placeholder="Місто">
-                <div class="row">
+                <div class="input-row">
                     <input type="text" id="reg-school" placeholder="Школа №">
                     <input type="text" id="reg-class" placeholder="Клас">
                 </div>
                 <button class="btn-inst-primary" onclick="showStep(2)">Далі</button>
+                <button class="btn-link" onclick="location.reload()">Назад</button>
             </div>
 
             <div id="step-2" class="hidden">
-                <h3>Обери аватар</h3>
-                <div class="avatar-selection-grid" id="avatar-list"></div>
-                <input type="password" id="reg-pass" placeholder="Пароль">
-                <button class="btn-inst-primary" id="btn-finish-reg">Зареєструватися</button>
+                <h3>Обери фото профілю</h3>
+                <div class="avatar-grid" id="avatar-list">
+                    </div>
+                <input type="password" id="reg-pass" placeholder="Придумай пароль">
+                <button id="btn-finish-reg" class="btn-inst-primary">Створити акаунт</button>
+                <button class="btn-link" onclick="showStep(1)">Назад</button>
             </div>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
+        
         <header class="inst-header">
-            <h1 class="inst-logo">SchoolSpace</h1>
-            <div class="header-icons">
-                <i class="far fa-heart"></i>
-                <i class="far fa-paper-plane"></i>
+            <div class="header-inner">
+                <h1 class="inst-logo">SchoolSpace</h1>
+                <div class="header-actions">
+                    <i class="far fa-heart"></i>
+                    <i class="far fa-paper-plane" onclick="switchPage('messages')"></i>
+                </div>
             </div>
         </header>
 
-        <main class="inst-main">
+        <main class="main-content">
+            
             <section id="page-feed" class="page">
-                <div class="create-post-mini">
-                    <img src="" class="current-user-av">
-                    <textarea id="post-text" placeholder="Що нового в школі?"></textarea>
-                    <button id="btn-post">Поширити</button>
+                <div class="create-post-card">
+                    <div class="cp-top">
+                        <img src="" class="current-user-av user-thumb">
+                        <textarea id="post-text" placeholder="Що цікавого в школі?"></textarea>
+                    </div>
+                    <div class="cp-bottom">
+                        <button id="btn-post" class="btn-publish">Опублікувати</button>
+                    </div>
                 </div>
                 <div id="feed"></div>
             </section>
 
-            <section id="page-profile" class="page hidden">
-                <div class="profile-top">
-                    <img src="" id="prof-avatar" class="inst-profile-av">
-                    <div class="profile-info-main">
-                        <h2 id="prof-name">Завантаження...</h2>
-                        <button id="btn-logout" class="btn-edit-prof">Вийти</button>
+            <section id="page-search" class="page hidden">
+                <div class="search-container">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Пошук школи (наприклад: 25)" oninput="searchBySchool()">
                     </div>
                 </div>
-                <div class="profile-bio">
-                    <p id="prof-info"></p>
+                <div id="search-results">
+                    <p class="empty-msg">Введіть номер школи, щоб побачити пости однокласників</p>
                 </div>
-                <div id="user-posts" class="posts-grid"></div>
             </section>
+
+            <section id="page-messages" class="page hidden">
+                <div class="messages-placeholder">
+                    <i class="fab fa-facebook-messenger"></i>
+                    <h3>Твої повідомлення</h3>
+                    <p>Надсилай приватні фото та повідомлення друзям.</p>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page hidden">
+                <div class="profile-header">
+                    <div class="profile-main-info">
+                        <img src="" id="prof-avatar" class="large-avatar">
+                        <div class="profile-stats">
+                            <h2 id="prof-name">username</h2>
+                            <button id="btn-logout" class="btn-secondary">Вийти</button>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <p id="prof-info" class="bio-text"></p>
+                        <span class="school-tag">🏫 Учень SchoolSpace</span>
+                    </div>
+                </div>
+                <div class="profile-posts-grid">
+                    <div id="user-posts"></div>
+                </div>
+            </section>
+
         </main>
 
-        <nav class="inst-nav">
-            <button class="nav-btn active" onclick="switchPage('feed', this)"><i class="fas fa-home"></i></button>
-            <button class="nav-btn" onclick="switchPage('explore', this)"><i class="fas fa-search"></i></button>
-            <button class="nav-btn" onclick="switchPage('add', this)"><i class="far fa-plus-square"></i></button>
-            <button class="nav-btn" onclick="switchPage('profile', this)"><img src="" class="current-user-av nav-av"></button>
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchPage('feed', this)">
+                <i class="fas fa-home"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('search', this)">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('add', this)">
+                <i class="far fa-plus-square"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('messages', this)">
+                <i class="fab fa-facebook-messenger"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('profile', this)">
+                <img src="" class="current-user-av nav-thumb">
+            </button>
+        </nav>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SchoolSpace | Instagram Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-container" class="modal-overlay">
+        <div class="auth-card">
+            <h1 class="inst-logo-big">SchoolSpace</h1>
+            
+            <div id="auth-initial">
+                <div class="auth-form">
+                    <input type="email" id="email" placeholder="Електронна пошта">
+                    <input type="password" id="password" placeholder="Пароль">
+                    <button id="btn-login" class="btn-inst-primary">Увійти</button>
+                    
+                    <div class="divider"><span>АБО</span></div>
+                    
+                    <button id="btn-google" class="btn-google-text">
+                        <i class="fab fa-google"></i> Увійти через Google
+                    </button>
+                </div>
+                <div class="auth-switch">
+                    Немає акаунту? <a href="#" onclick="showStep(1)">Зареєструватися</a>
+                </div>
+            </div>
+
+            <div id="step-1" class="hidden">
+                <h3>Твій профіль</h3>
+                <input type="text" id="reg-name" placeholder="Ім'я та прізвище">
+                <input type="text" id="reg-city" placeholder="Місто">
+                <div class="input-row">
+                    <input type="text" id="reg-school" placeholder="Школа №">
+                    <input type="text" id="reg-class" placeholder="Клас">
+                </div>
+                <button class="btn-inst-primary" onclick="showStep(2)">Далі</button>
+                <button class="btn-link" onclick="location.reload()">Назад</button>
+            </div>
+
+            <div id="step-2" class="hidden">
+                <h3>Обери фото профілю</h3>
+                <div class="avatar-grid" id="avatar-list">
+                    </div>
+                <input type="password" id="reg-pass" placeholder="Придумай пароль">
+                <button id="btn-finish-reg" class="btn-inst-primary">Створити акаунт</button>
+                <button class="btn-link" onclick="showStep(1)">Назад</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        
+        <header class="inst-header">
+            <div class="header-inner">
+                <h1 class="inst-logo">SchoolSpace</h1>
+                <div class="header-actions">
+                    <i class="far fa-heart"></i>
+                    <i class="far fa-paper-plane" onclick="switchPage('messages')"></i>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            
+            <section id="page-feed" class="page">
+                <div class="create-post-card">
+                    <div class="cp-top">
+                        <img src="" class="current-user-av user-thumb">
+                        <textarea id="post-text" placeholder="Що цікавого в школі?"></textarea>
+                    </div>
+                    <div class="cp-bottom">
+                        <button id="btn-post" class="btn-publish">Опублікувати</button>
+                    </div>
+                </div>
+                <div id="feed"></div>
+            </section>
+
+            <section id="page-search" class="page hidden">
+                <div class="search-container">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Пошук школи (наприклад: 25)" oninput="searchBySchool()">
+                    </div>
+                </div>
+                <div id="search-results">
+                    <p class="empty-msg">Введіть номер школи, щоб побачити пости однокласників</p>
+                </div>
+            </section>
+
+            <section id="page-messages" class="page hidden">
+                <div class="messages-placeholder">
+                    <i class="fab fa-facebook-messenger"></i>
+                    <h3>Твої повідомлення</h3>
+                    <p>Надсилай приватні фото та повідомлення друзям.</p>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page hidden">
+                <div class="profile-header">
+                    <div class="profile-main-info">
+                        <img src="" id="prof-avatar" class="large-avatar">
+                        <div class="profile-stats">
+                            <h2 id="prof-name">username</h2>
+                            <button id="btn-logout" class="btn-secondary">Вийти</button>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <p id="prof-info" class="bio-text"></p>
+                        <span class="school-tag">🏫 Учень SchoolSpace</span>
+                    </div>
+                </div>
+                <div class="profile-posts-grid">
+                    <div id="user-posts"></div>
+                </div>
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchPage('feed', this)">
+                <i class="fas fa-home"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('search', this)">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('add', this)">
+                <i class="far fa-plus-square"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('messages', this)">
+                <i class="fab fa-facebook-messenger"></i>
+            </button>
+            <button class="nav-item" onclick="switchPage('profile', this)">
+                <img src="" class="current-user-av nav-thumb">
+            </button>
         </nav>
     </div>
 
