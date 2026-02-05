@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace</title>
+    <title>SchoolSpace | Соцмережа</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,7 +12,10 @@
     <div id="auth-container" class="modal-overlay">
         <div class="auth-card">
             <h1 class="inst-logo-big">SchoolSpace</h1>
-            <button id="btn-google" class="btn-inst-primary"><i class="fab fa-google"></i> Увійти з Google</button>
+            <p>Вітаємо у твоїй шкільній спільноті!</p>
+            <button id="btn-google" class="btn-inst-primary">
+                <i class="fab fa-google"></i> Увійти з Google
+            </button>
         </div>
     </div>
 
@@ -20,40 +23,45 @@
         <header class="inst-header">
             <div class="header-inner">
                 <h1 class="inst-logo" onclick="switchPage('feed')">SchoolSpace</h1>
-                <i class="far fa-paper-plane" onclick="switchPage('messages')"></i>
+                <div class="header-actions">
+                    <i class="far fa-paper-plane" onclick="switchPage('messages')"></i>
+                </div>
             </div>
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="create-post-card">
-                    <textarea id="post-text" placeholder="Що цікавого?"></textarea>
-                    <button id="btn-post" class="btn-publish">Поширити</button>
+                    <textarea id="post-text" placeholder="Що цікавого в школі?"></textarea>
+                    <button id="btn-post" class="btn-publish">Опублікувати</button>
                 </div>
                 <div id="feed"></div>
             </section>
 
             <section id="page-search" class="page hidden">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Пошук за школою №...">
-                    <button onclick="searchBySchool()" class="btn-inst-primary">Шукати</button>
+                    <input type="text" id="search-input" placeholder="Введіть номер школи (напр. 25)">
+                    <button onclick="searchBySchool()" class="btn-inst-primary">Знайти учнів</button>
                 </div>
                 <div id="search-results"></div>
             </section>
 
             <section id="page-messages" class="page hidden">
-                <div class="placeholder-info">
-                    <i class="fab fa-facebook-messenger" style="font-size: 50px;"></i>
-                    <h2>Твої повідомлення</h2>
-                    <p>Тут скоро з'являться чати з друзями.</p>
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages-area"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="msg-input" placeholder="Напиши повідомлення...">
+                        <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </section>
 
             <section id="page-profile" class="page hidden">
                 <div class="profile-header">
                     <img id="prof-avatar" src="" class="user-thumb-large">
-                    <h2 id="prof-name">Користувач</h2>
-                    <button onclick="logout()" class="btn-secondary">Вийти</button>
+                    <h2 id="prof-name">Завантаження...</h2>
+                    <p id="prof-email" style="color: gray;"></p>
+                    <button onclick="logout()" class="btn-secondary" style="margin-top: 20px;">Вийти з акаунту</button>
                 </div>
             </section>
         </main>
@@ -61,6 +69,7 @@
         <nav class="bottom-nav">
             <button class="nav-item" onclick="switchPage('feed')"><i class="fas fa-home"></i></button>
             <button class="nav-item" onclick="switchPage('search')"><i class="fas fa-search"></i></button>
+            <button class="nav-item" onclick="switchPage('messages')"><i class="fab fa-facebook-messenger"></i></button>
             <button class="nav-item" onclick="switchPage('profile')"><i class="far fa-user"></i></button>
         </nav>
     </div>
