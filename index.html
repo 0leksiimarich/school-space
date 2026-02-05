@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace | Соцмережа</title>
+    <title>SchoolSpace</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,7 +12,7 @@
     <div id="auth-container" class="modal-overlay">
         <div class="auth-card">
             <h1 class="inst-logo-big">SchoolSpace</h1>
-            <p>Вітаємо у твоїй шкільній спільноті!</p>
+            <p>Твоя школа в одному додатку</p>
             <button id="btn-google" class="btn-inst-primary">
                 <i class="fab fa-google"></i> Увійти з Google
             </button>
@@ -32,7 +32,7 @@
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="create-post-card">
-                    <textarea id="post-text" placeholder="Що цікавого в школі?"></textarea>
+                    <textarea id="post-text" placeholder="Поділися новинами..."></textarea>
                     <button id="btn-post" class="btn-publish">Опублікувати</button>
                 </div>
                 <div id="feed"></div>
@@ -40,8 +40,8 @@
 
             <section id="page-search" class="page hidden">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Введіть номер школи (напр. 25)">
-                    <button onclick="searchBySchool()" class="btn-inst-primary">Знайти учнів</button>
+                    <input type="text" id="search-input" placeholder="Введіть номер школи...">
+                    <button id="btn-search" class="btn-inst-primary">Знайти</button>
                 </div>
                 <div id="search-results"></div>
             </section>
@@ -50,7 +50,7 @@
                 <div class="chat-container">
                     <div id="chat-messages" class="chat-messages-area"></div>
                     <div class="chat-input-area">
-                        <input type="text" id="msg-input" placeholder="Напиши повідомлення...">
+                        <input type="text" id="msg-input" placeholder="Повідомлення...">
                         <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -60,8 +60,7 @@
                 <div class="profile-header">
                     <img id="prof-avatar" src="" class="user-thumb-large">
                     <h2 id="prof-name">Завантаження...</h2>
-                    <p id="prof-email" style="color: gray;"></p>
-                    <button onclick="logout()" class="btn-secondary" style="margin-top: 20px;">Вийти з акаунту</button>
+                    <button id="btn-logout" class="btn-secondary">Вийти</button>
                 </div>
             </section>
         </main>
