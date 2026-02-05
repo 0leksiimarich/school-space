@@ -2,152 +2,105 @@ import { auth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-console.log("Файл app.js завантажено успішно!");
-
-// Глобальна функція для перемикання сторінок
-window.switchPage = (pageId) => {
-    console.log("Спроба перейти на сторінку:", pageId);
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.add('hidden'));
-    
-    const target = document.getElementById(`page-${pageId}`);
-    if (target) {
-        target.classList.remove('hidden');
-        console.log("Сторінку активовано:", pageId);
-    } else {
-        console.error("Помилка: Сторінку не знайдено за ID:", `page-${pageId}`);
-    }
+// 1. ПЕРЕМИКАННЯ СТОРІНОК (Силове)
+const showPage = (id) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    const target = document.getElementById(`page-${id}`);
+    if (target) target.classList.remove('hidden');
+    window.scrollTo(0,0);
 };
 
-// --- ПРИВ'ЯЗКА ПОДІЙ ---
+// 2. ПРИВ'ЯЗКА КНОПОК
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM завантажено. Починаємо прив'язку кнопок...");
+    
+    // Навігація
+    document.getElementById('nav-feed').onclick = () => showPage('feed');
+    document.getElementById('nav-search').onclick = () => showPage('search');
+    document.getElementById('nav-messages').onclick = () => showPage('messages');
+    document.getElementById('nav-profile').onclick = () => showPage('profile');
+    document.getElementById('direct-icon').onclick = () => showPage('messages');
+    document.getElementById('logo-home').onclick = () => showPage('feed');
 
-    // 1. Кнопка Google
-    const btnGoogle = document.getElementById('btn-google');
-    if (btnGoogle) {
-        btnGoogle.onclick = async () => {
-            console.log("Натиснуто кнопку Google");
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (e) {
-                console.error("Помилка Google Auth:", e);
-                alert("Помилка входу Google: " + e.message);
-            }
-        };
-    }
+    // Авторизація
+    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // 2. Кнопка Поста
-    const btnPost = document.getElementById('btn-post');
-    if (btnPost) {
-        btnPost.onclick = async () => {
-            console.log("Спроба опублікувати пост...");
-            const txt = document.getElementById('post-text').value;
-            if (!txt.trim()) return;
-            try {
-                await addDoc(collection(db, "posts"), {
-                    text: txt,
-                    userName: auth.currentUser.displayName,
-                    avatar: auth.currentUser.photoURL,
-                    createdAt: serverTimestamp()
-                });
-                document.getElementById('post-text').value = "";
-                console.log("Пост опубліковано!");
-            } catch (e) {
-                console.error("Помилка публікації:", e);
-            }
-        };
-    }
+    // Пости
+    document.getElementById('btn-post').onclick = async () => {
+        const txt = document.getElementById('post-text').value;
+        const img = document.getElementById('post-img-url').value;
+        if (!txt.trim()) return;
 
-    // 3. Кнопка Повідомлення
-    const btnSendMsg = document.getElementById('btn-send-msg');
-    if (btnSendMsg) {
-        btnSendMsg.onclick = async () => {
-            const input = document.getElementById('msg-input');
-            if (!input.value.trim()) return;
-            try {
-                await addDoc(collection(db, "messages"), {
-                    text: input.value,
-                    senderName: auth.currentUser.displayName,
-                    senderId: auth.currentUser.uid,
-                    avatar: auth.currentUser.photoURL,
-                    createdAt: serverTimestamp()
-                });
-                input.value = "";
-                console.log("Повідомлення відправлено");
-            } catch (e) {
-                console.error("Помилка повідомлення:", e);
-            }
-        };
-    }
+        await addDoc(collection(db, "posts"), {
+            text: txt,
+            image: img || null,
+            userName: auth.currentUser.displayName,
+            avatar: auth.currentUser.photoURL,
+            createdAt: serverTimestamp()
+        });
+        document.getElementById('post-text').value = "";
+        document.getElementById('post-img-url').value = "";
+    };
 
-    // 4. Кнопка Виходу
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.onclick = () => {
-            console.log("Вихід...");
-            signOut(auth);
-        };
-    }
+    // Чат
+    document.getElementById('btn-send-msg').onclick = async () => {
+        const input = document.getElementById('msg-input');
+        if (!input.value.trim()) return;
+        await addDoc(collection(db, "messages"), {
+            text: input.value,
+            senderId: auth.currentUser.uid,
+            senderName: auth.currentUser.displayName,
+            avatar: auth.currentUser.photoURL,
+            createdAt: serverTimestamp()
+        });
+        input.value = "";
+    };
 });
 
-// --- ВІДСТЕЖЕННЯ АВТОРИЗАЦІЇ ---
+// 3. СТАН КОРИСТУВАЧА
 onAuthStateChanged(auth, (user) => {
-    const authCont = document.getElementById('auth-container');
-    const appCont = document.getElementById('app-container');
-
+    const authUI = document.getElementById('auth-container');
+    const appUI = document.getElementById('app-container');
     if (user) {
-        console.log("Користувач авторизований:", user.displayName);
-        authCont.classList.add('hidden');
-        appCont.classList.remove('hidden');
-        
-        const profName = document.getElementById('prof-name');
-        const profAv = document.getElementById('prof-avatar');
-        if (profName) profName.innerText = user.displayName;
-        if (profAv) profAv.src = user.photoURL;
-
-        loadFeed();
-        listenMessages();
+        authUI.classList.add('hidden');
+        appUI.classList.remove('hidden');
+        document.getElementById('prof-name').innerText = user.displayName;
+        document.getElementById('prof-avatar').src = user.photoURL;
+        loadData();
     } else {
-        console.log("Користувач НЕ авторизований");
-        authCont.classList.remove('hidden');
-        appCont.classList.add('hidden');
+        authUI.classList.remove('hidden');
+        appUI.classList.add('hidden');
     }
 });
 
-// Завантаження постів
-function loadFeed() {
-    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snap) => {
+function loadData() {
+    // Стрічка
+    onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
         const feed = document.getElementById('feed');
-        if (!feed) return;
         feed.innerHTML = '';
         snap.forEach(d => {
             const p = d.data();
             feed.innerHTML += `
                 <div class="post-card">
                     <div class="post-header"><img src="${p.avatar}" class="nav-thumb"> <b>${p.userName}</b></div>
-                    <p>${p.text}</p>
+                    <div class="post-content-text">${p.text}</div>
+                    ${p.image ? `<img src="${p.image}" style="width:100%; display:block">` : ''}
                 </div>`;
         });
     });
-}
 
-// Завантаження чату
-function listenMessages() {
-    const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-    onSnapshot(q, (snap) => {
-        const area = document.getElementById('chat-messages');
-        if (!area) return;
-        area.innerHTML = '';
+    // Чат
+    onSnapshot(query(collection(db, "messages"), orderBy("createdAt", "asc")), (snap) => {
+        const chat = document.getElementById('chat-messages');
+        chat.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
-            const isMine = m.senderId === auth.currentUser?.uid;
-            area.innerHTML += `
-                <div class="msg-wrapper ${isMine ? 'my-msg' : 'other-msg'}">
+            const mine = m.senderId === auth.currentUser.uid;
+            chat.innerHTML += `
+                <div class="msg-wrapper ${mine ? 'my-msg' : 'other-msg'}">
                     <div class="msg-bubble"><small>${m.senderName}</small><p>${m.text}</p></div>
                 </div>`;
         });
-        area.scrollTop = area.scrollHeight;
+        chat.scrollTop = chat.scrollHeight;
     });
 }
