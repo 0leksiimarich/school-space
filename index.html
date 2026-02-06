@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace | Чат та Стрічка</title>
+    <title>SchoolSpace | Photo & Video</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,10 +12,8 @@
     <div id="auth-container" class="modal-overlay">
         <div class="auth-card">
             <h1 class="inst-logo-big">SchoolSpace</h1>
-            <p>Увійди, щоб почати спілкування</p>
-            <button id="btn-google" class="btn-inst-primary">
-                <i class="fab fa-google"></i> Увійти з Google
-            </button>
+            <p>Твоя школа онлайн</p>
+            <button id="btn-google" class="btn-inst-primary">Увійти з Google</button>
         </div>
     </div>
 
@@ -23,20 +21,21 @@
         <header class="inst-header">
             <div class="header-inner">
                 <h1 class="inst-logo" id="logo-home">SchoolSpace</h1>
-                <div class="header-actions">
-                    <i class="far fa-paper-plane" id="direct-icon"></i>
-                </div>
+                <i class="far fa-paper-plane" id="direct-icon"></i>
             </div>
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="create-post-card">
-                    <textarea id="post-text" placeholder="Що цікавого в школі?"></textarea>
+                    <textarea id="post-text" placeholder="Що цікавого?"></textarea>
+                    
+                    <input type="text" id="post-video-url" placeholder="Встав посилання на відео (YouTube)..." class="video-input">
+                    
                     <div class="post-controls">
                         <input type="file" id="post-file" accept="image/*" class="hidden">
                         <button id="btn-add-photo" class="btn-attachment">
-                            <i class="fas fa-camera"></i> Додати фото
+                            <i class="fas fa-camera"></i> Фото
                         </button>
                         <span id="file-name"></span>
                         <button id="btn-post" class="btn-publish">Опублікувати</button>
@@ -45,19 +44,11 @@
                 <div id="feed"></div>
             </section>
 
-            <section id="page-search" class="page hidden">
-                <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Номер школи (напр. 15)">
-                    <button id="btn-search-go" class="btn-inst-primary">Знайти учнів</button>
-                </div>
-                <div id="search-results"></div>
-            </section>
-
             <section id="page-messages" class="page hidden">
                 <div class="chat-container">
                     <div id="chat-messages" class="chat-messages-area"></div>
                     <div class="chat-input-area">
-                        <input type="text" id="msg-input" placeholder="Напишіть повідомлення...">
+                        <input type="text" id="msg-input" placeholder="Повідомлення...">
                         <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -66,15 +57,14 @@
             <section id="page-profile" class="page hidden">
                 <div class="profile-header">
                     <img id="prof-avatar" src="" class="user-thumb-large">
-                    <h2 id="prof-name">Завантаження...</h2>
-                    <button id="btn-logout" class="btn-secondary">Вийти з акаунту</button>
+                    <h2 id="prof-name">Користувач</h2>
+                    <button id="btn-logout" class="btn-secondary">Вийти</button>
                 </div>
             </section>
         </main>
 
         <nav class="bottom-nav">
             <button class="nav-item" id="nav-feed"><i class="fas fa-home"></i></button>
-            <button class="nav-item" id="nav-search"><i class="fas fa-search"></i></button>
             <button class="nav-item" id="nav-messages"><i class="fab fa-facebook-messenger"></i></button>
             <button class="nav-item" id="nav-profile"><i class="far fa-user"></i></button>
         </nav>
