@@ -1,124 +1,194 @@
-/* --- ОСНОВНИЙ ФОН ЧАТУ (TG Style) --- */
-.chat-messages-area {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background: #afbecc; /* Класичний синьо-сірий фон TG */
-    background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); /* Легкий паттерн */
-    flex: 1;
-    overflow-y: auto;
+/* --- TELEGRAM-STYLE CSS --- */
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+:root {
+    --tg-bg: #547594; /* Класичний синій колір фону ТГ */
+    --tg-other-msg: #ffffff;
+    --tg-my-msg: #efffde; /* Фірмовий колір своїх повідомлень */
+    --tg-text: #000000;
+    --tg-gray: #8e8e8e;
+    --tg-blue: #3390ec;
 }
 
-/* Обгортка повідомлення */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #fafafa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #262626;
+}
+
+.hidden { display: none !important; }
+
+/* --- АВТОРИЗАЦІЯ --- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.auth-card {
+    text-align: center;
+    width: 320px;
+    padding: 30px;
+}
+
+.inst-logo-big {
+    font-family: 'Lobster', cursive;
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+/* --- ШАПКА --- */
+.inst-header {
+    background: #ffffff;
+    border-bottom: 1px solid #dbdbdb;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    width: 100%;
+    max-width: 600px;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.inst-logo {
+    font-family: 'Lobster', cursive;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* --- СТОРІНКА ЧАТУ (TG STYLE) --- */
+.chat-container {
+    height: calc(100vh - 120px); /* Вираховуємо висоту під екран */
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--tg-bg);
+    /* Патерн як у Телеграмі */
+    background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+}
+
+.chat-messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Обгортка повідомлень */
 .msg-wrapper {
     display: flex;
     align-items: flex-end;
     gap: 8px;
     max-width: 85%;
-    margin-bottom: 4px;
 }
 
-/* Мої повідомлення (праворуч) */
-.my-msg {
-    align-self: flex-end;
-    flex-direction: row-reverse; /* Аватар праворуч */
-}
-
-/* Чужі повідомлення (ліворуч) */
+/* Повідомлення іншого користувача */
 .other-msg {
     align-self: flex-start;
 }
 
-/* Аватари */
+/* Твоє повідомлення */
+.my-msg {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
 .chat-av {
     width: 35px;
     height: 35px;
     border-radius: 50%;
     flex-shrink: 0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Бульбашка повідомлення */
+/* Сама бульбашка */
 .msg-bubble {
     padding: 8px 12px;
     border-radius: 15px;
     position: relative;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    word-wrap: break-word;
     font-size: 14.5px;
     line-height: 1.4;
-    word-wrap: break-word;
 }
 
-/* Колір і хвостик для ЧУЖИХ (Білий) */
 .other-msg .msg-bubble {
-    background: #ffffff;
-    color: #000;
-    border-bottom-left-radius: 4px;
+    background: var(--tg-other-msg);
+    border-bottom-left-radius: 2px;
 }
 
-/* Колір і хвостик для МОЇХ (Світло-зелений) */
 .my-msg .msg-bubble {
-    background: #efffde;
-    color: #000;
-    border-bottom-right-radius: 4px;
+    background: var(--tg-my-msg);
+    border-bottom-right-radius: 2px;
 }
 
-/* Ім'я автора над текстом */
+/* Ім'я автора */
 .msg-info {
     font-size: 12px;
     font-weight: bold;
-    margin-bottom: 3px;
-    color: #3897f0; /* Синій колір для імен як у ТГ */
+    margin-bottom: 2px;
+    color: var(--tg-blue);
 }
 
-.my-msg .msg-info {
-    display: none; /* У ТГ у своїх повідомленнях ім'я зазвичай не пишуть */
-}
+.my-msg .msg-info { display: none; } /* Своє ім'я не показуємо */
 
-/* Час та кнопка видалення */
+/* Мета дані та видалення */
 .msg-meta {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 5px;
-    font-size: 10px;
-    color: #a0a0a0;
     margin-top: 2px;
 }
 
 .del-btn {
-    color: #ff4d4d;
     cursor: pointer;
-    font-weight: bold;
+    color: #ff5a5a;
     font-size: 14px;
-    margin-left: 5px;
-    opacity: 0;
-    transition: opacity 0.2s;
+    font-weight: bold;
+    padding-left: 5px;
+    opacity: 0.5;
 }
 
-.msg-bubble:hover .del-btn {
-    opacity: 1;
-}
+.del-btn:hover { opacity: 1; }
 
-/* Значок адміна */
 .admin-badge {
-    background: #3897f0;
-    color: white;
     font-size: 9px;
+    background: var(--tg-blue);
+    color: white;
     padding: 1px 4px;
     border-radius: 4px;
     margin-left: 5px;
     text-transform: uppercase;
 }
 
-/* Поле вводу знизу */
+/* ПОЛЕ ВВОДУ */
 .chat-input-area {
+    background: #ffffff;
+    padding: 10px 15px;
     display: flex;
-    padding: 10px;
-    background: white;
-    gap: 10px;
     align-items: center;
+    gap: 10px;
 }
 
 #msg-input {
@@ -127,12 +197,105 @@
     padding: 10px 15px;
     border-radius: 20px;
     outline: none;
+    font-size: 15px;
 }
 
 #btn-send-msg {
     background: none;
     border: none;
-    color: #0088cc;
+    color: var(--tg-blue);
     font-size: 24px;
     cursor: pointer;
+}
+
+/* --- СТРІЧКА ПОСТІВ --- */
+.main-content {
+    max-width: 500px;
+    margin: 20px auto 80px;
+    padding: 0 10px;
+}
+
+.post-card {
+    background: #ffffff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    padding-bottom: 10px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 10px;
+}
+
+.post-content-text { padding: 0 12px 10px; }
+.post-img-display { width: 100%; display: block; }
+
+/* КНОПКА СТВОРЕННЯ ПОСТА */
+.create-post-card {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.video-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+/* --- НИЖНЯ НАВІГАЦІЯ --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 55px;
+    background: #ffffff;
+    border-top: 1px solid #dbdbdb;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #262626;
+    cursor: pointer;
+}
+
+/* ЗАГАЛЬНІ КНОПКИ */
+.btn-inst-primary {
+    background: var(--tg-blue);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+}
+
+.btn-publish {
+    color: var(--tg-blue);
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.nav-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
 }
