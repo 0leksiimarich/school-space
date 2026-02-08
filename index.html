@@ -3,92 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SchoolSpace</title>
+    <title>SchoolSpace Official</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --bg: #0e1621; --panel: #17212b; --accent: #40a7e3; 
             --text: #ffffff; --text-sec: #8ba0b3; --border: #232e3c;
-            --msg-in: #182533; --msg-out: #2b5278; --danger: #ff5959;
+            --danger: #ff5959;
         }
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); overflow: hidden; height: 100%; }
         .hidden { display: none !important; }
 
-        /* App Layout */
+        /* UI Layout */
         .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 100; }
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 1000; transition: 0.3s; border-right: 1px solid var(--border); }
         .sidebar.active { left: 0; }
         .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
         .menu-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-        
-        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; text-decoration: none; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); }
+        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; }
 
         .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; }
-        .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 30px; }
+        .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
-        /* Post & UI */
+        /* Posts & Media */
         .post-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
         .post-img { width: 100%; border-radius: 10px; margin-top: 10px; max-height: 450px; object-fit: cover; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin-top: 10px; border-radius: 10px; overflow: hidden; background: #000; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin-top: 10px; border-radius: 10px; overflow: hidden; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
         .tg-btn-small { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .help-card { background: var(--panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border); line-height: 1.6; }
-        .help-card h3 { color: var(--accent); margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: none; }
         .menu-overlay.active { display: block; }
-
-        /* Ban Screen */
         .ban-overlay { position: fixed; inset: 0; background: #000; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
 
     <div id="ban-screen" class="ban-overlay hidden">
-        <i class="fas fa-user-lock" style="font-size: 80px; color: var(--danger);"></i>
-        <h1>АКАУНТ ЗАБЛОКОВАНО</h1>
-        <p>Ваш доступ до SchoolSpace обмежено за порушення правил.</p>
+        <i class="fas fa-user-slash" style="font-size: 80px; color: var(--danger);"></i>
+        <h1>АКАУНТ ЗАБАНЕНО</h1>
+        <p>Ви порушили правила SchoolSpace. Доступ обмежено.</p>
     </div>
 
     <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
         <div style="background:var(--panel); padding:40px; border-radius:20px; text-align:center; border: 1px solid var(--border);">
             <h1 style="color:var(--accent)">SchoolSpace</h1>
-            <button id="btn-google" class="tg-btn-small" style="width:100%"><i class="fab fa-google"></i> Увійти з Google</button>
+            <button id="btn-google" class="tg-btn-small"><i class="fab fa-google"></i> Увійти з Google</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         <div id="menu-overlay" class="menu-overlay"></div>
-
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <img id="menu-avatar" src="" class="menu-avatar">
-                <div id="menu-username" style="font-weight:bold; margin-top:10px;">Завантаження...</div>
+                <div id="menu-username" style="font-weight:bold; margin-top:10px;">User</div>
             </div>
             <nav>
                 <div class="nav-link" onclick="showPage('feed')"><i class="fas fa-home"></i> Стрічка</div>
-                <div class="nav-link" onclick="showPage('contacts')"><i class="fas fa-search"></i> Знайти людей</div>
+                <div class="nav-link" onclick="showPage('contacts')"><i class="fas fa-users"></i> Учасники</div>
                 <div class="nav-link" onclick="showPage('help')"><i class="fas fa-question-circle"></i> Поміч</div>
                 <div class="nav-link" onclick="showPage('profile')"><i class="fas fa-user-circle"></i> Профіль</div>
-                <div class="nav-link" id="btn-logout" style="color: var(--danger); margin-top: 20px;"><i class="fas fa-sign-out-alt"></i> Вийти</div>
+                <div class="nav-link" id="btn-logout" style="color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Вихід</div>
             </nav>
         </aside>
 
         <header class="tg-header">
-            <i class="fas fa-bars header-icon" id="burger-btn" style="cursor:pointer; margin-right:20px;"></i>
+            <i class="fas fa-bars" id="burger-btn" style="cursor:pointer; margin-right:20px;"></i>
             <strong id="page-title">Стрічка</strong>
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="post-card">
-                    <textarea id="post-text" placeholder="Що цікавого? Додай текст або лінк на відео..." style="width:100%; background:var(--bg); border:none; color:white; padding:10px; border-radius:8px; outline:none; resize:none; min-height: 80px;"></textarea>
+                    <textarea id="post-text" placeholder="Що нового? (YouTube лінки працюють!)" style="width:100%; background:var(--bg); border:none; color:white; padding:10px; border-radius:8px; outline:none; resize:none; min-height:80px;"></textarea>
                     <div style="display:flex; justify-content:space-between; margin-top:10px;">
                         <input type="file" id="post-file-input" accept="image/*" hidden>
-                        <button onclick="document.getElementById('post-file-input').click()" class="tg-btn-small" style="background:var(--border)"><i class="fas fa-camera"></i> Фото</button>
+                        <button onclick="document.getElementById('post-file-input').click()" class="tg-btn-small" style="background:var(--border)">Фото</button>
                         <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
                     </div>
                 </div>
@@ -96,47 +88,29 @@
             </section>
 
             <section id="page-contacts" class="page hidden">
-                <h3>Усі учасники</h3>
+                <h3>Усі користувачі</h3>
                 <div id="all-users-container"></div>
             </section>
 
             <section id="page-help" class="page hidden">
-                <div class="help-card">
-                    <h2 style="text-align: center; color: var(--accent);">🛠 Центр допомоги</h2>
-                    
-                    <h3>📝 Як користуватися сайтом</h3>
-                    <p>SchoolSpace — це твоя шкільна соцмережа. Ти можеш стрімити думки у стрічку, знаходити друзів та ділитися медіа. Використовуй бічне меню для перемикання між розділами.</p>
-
-                    <h3>🖼 Як додати фото та відео</h3>
-                    <ul>
-                        <li><strong>Фото:</strong> Натисніть кнопку "Фото" під вікном тексту, виберіть файл. Сайт автоматично стисне його для швидкості.</li>
-                        <li><strong>Відео:</strong> Оскільки пряме завантаження великих відео обмежене, просто **встав посилання на YouTube** у текст поста. Сайт сам перетворить посилання на відеоплеєр.</li>
-                    </ul>
-
-                    <h3>🛡 Як стати Адміністратором</h3>
-                    <p>Адміністратори (Модератори) стежать за порядком. Якщо ти хочеш отримати статус "Admin", ти маєш:</p>
-                    <ol>
-                        <li>Бути активним користувачем (робити пости).</li>
-                        <li>Не порушувати правила (без матів та спаму).</li>
-                        <li>Надіслати заявку на нашу пошту.</li>
-                    </ol>
-                    <p><strong>Пошта для заявок:</strong> <br>
-                    <a href="oleksijmaric20@gmail.com" style="color: var(--accent); font-weight: bold; text-decoration: none;">vovakuznecov822@gmail.com</a></p>
-                    <p style="font-size: 0.9rem; color: var(--text-sec);">*У темі листа вкажіть свій нікнейм на сайті та чому саме ви маєте бути адміном.</p>
+                <div class="post-card">
+                    <h2>❓ Центр допомоги</h2>
+                    <p><b>Відео:</b> Встав посилання на YouTube у текст поста.</p>
+                    <p><b>Адмінка:</b> Щоб стати адміном, пиши заявку на пошту:</p>
+                    <p><a href="mailto:vovakuznecov822@gmail.com" style="color:var(--accent)">vovakuznecov822@gmail.com</a></p>
                 </div>
             </section>
 
             <section id="page-profile" class="page hidden">
-                <div style="text-align:center; padding: 20px;">
+                <div style="text-align:center;">
                     <img id="profile-avatar-big" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 3px solid var(--accent);">
                     <h2 id="profile-name-big"></h2>
-                    <input type="file" id="avatar-upload" accept="image/*" hidden>
-                    <button onclick="document.getElementById('avatar-upload').click()" class="tg-btn-small">Змінити аватар</button>
+                    <input type="file" id="avatar-upload" hidden>
+                    <button onclick="document.getElementById('avatar-upload').click()" class="tg-btn-small">Змінити фото</button>
                 </div>
             </section>
         </main>
     </div>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>
