@@ -6,22 +6,36 @@ import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.
 const ADMINS = ['v5DxqguPUjTi1vtgtzgjZyyrlUf2']; 
 const VAPID_KEY = "BGoAZAFZGj7h_2UmeYawbzieb1Z5DWMPY_XDvNCQlm3_OpjEX1Jx_rL8trsZ9zZQ06CeOqXTeD6WEKIidp6YfFA";
 
+// --- ФУНКЦІЯ СТИСНЕННЯ (Щоб фото не видалялися) ---
+async function compressImage(file, maxWidth = 800) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ratio = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * ratio;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.7)); // 0.7 - якість (70%)
+            };
+        };
+    });
+}
+
 // --- НАВІГАЦІЯ ---
 window.showPage = (pageId) => {
-    // Ховаємо всі сторінки
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    // Показуємо потрібну
     const target = document.getElementById(`page-${pageId}`);
     if(target) target.classList.remove('hidden');
     
-    // Оновлюємо заголовок
     const titles = { feed: 'Стрічка', chat: 'Чат', contacts: 'Контакти', profile: 'Профіль' };
     document.getElementById('page-title').innerText = titles[pageId] || 'SchoolSpace';
 
-    // Оновлюємо активний клас в меню
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    
-    // Закриваємо меню
     document.getElementById('sidebar').classList.remove('active');
     document.getElementById('menu-overlay').classList.remove('active');
 
@@ -29,7 +43,6 @@ window.showPage = (pageId) => {
     if(pageId === 'profile') loadMyPosts();
 };
 
-// --- МЕНЮ (БУРГЕР) ---
 document.getElementById('burger-btn').onclick = () => {
     document.getElementById('sidebar').classList.add('active');
     document.getElementById('menu-overlay').classList.add('active');
@@ -44,22 +57,11 @@ document.getElementById('btn-edit-avatar').onclick = () => document.getElementBy
 document.getElementById('avatar-upload').onchange = async (e) => {
     const file = e.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-        const base64 = reader.result;
-        await setDoc(doc(db, "users", auth.currentUser.uid), { customAvatar: base64 }, { merge: true });
-        document.getElementById('profile-avatar-big').src = base64;
-        document.getElementById('menu-avatar').src = base64;
-    };
-    reader.readAsDataURL(file);
+    const base64 = await compressImage(file, 400); // Аватарку стискаємо ще сильніше
+    await setDoc(doc(db, "users", auth.currentUser.uid), { customAvatar: base64 }, { merge: true });
+    document.getElementById('profile-avatar-big').src = base64;
+    document.getElementById('menu-avatar').src = base64;
 };
-
-// --- ТЕМА ---
-document.getElementById('theme-toggle').onclick = () => {
-    const isLight = document.body.classList.toggle('light-theme');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-};
-if(localStorage.getItem('theme') === 'light') document.body.classList.add('light-theme');
 
 // --- КОНТАКТИ ---
 function loadContacts() {
@@ -80,24 +82,41 @@ function loadContacts() {
     });
 }
 
-// --- СТРІЧКА ТА ПОСТИ ---
+// --- СТРІЧКА ТА ПУБЛІКАЦІЯ ---
 async function publishPost() {
+    const btn = document.getElementById('btn-publish');
     const txt = document.getElementById('post-text').value;
     const file = document.getElementById('post-file-input').files[0];
+    
     if (!txt && !file) return;
 
-    let imgData = null;
-    if (file) {
-        const reader = new FileReader();
-        imgData = await new Promise(r => { reader.onload = () => r(reader.result); reader.readAsDataURL(file); });
-    }
+    // 1. Блокуємо кнопку, щоб не додати два рази
+    btn.disabled = true;
+    btn.innerText = "Завантаження...";
 
-    await addDoc(collection(db, "posts"), {
-        text: txt, image: imgData, uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName, createdAt: serverTimestamp()
-    });
-    document.getElementById('post-text').value = "";
-    document.getElementById('post-file-input').value = "";
+    try {
+        let imgData = null;
+        if (file) {
+            imgData = await compressImage(file); // Стискаємо фото
+        }
+
+        await addDoc(collection(db, "posts"), {
+            text: txt, 
+            image: imgData, 
+            uid: auth.currentUser.uid,
+            name: auth.currentUser.displayName, 
+            createdAt: serverTimestamp()
+        });
+
+        document.getElementById('post-text').value = "";
+        document.getElementById('post-file-input').value = "";
+    } catch (e) {
+        alert("Помилка завантаження. Спробуйте менше фото.");
+    } finally {
+        // 2. Розблокуємо кнопку назад
+        btn.disabled = false;
+        btn.innerText = "Опублікувати";
+    }
 }
 
 function loadFeed() {
@@ -157,21 +176,20 @@ function loadChat() {
     });
 }
 
-// --- СТАН AUTH ---
+// --- AUTH ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
         
-        // Реєструємо/оновлюємо користувача в базі
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
         
         let av = user.photoURL;
-        if (userDoc.exists()) {
-            if (userDoc.data().customAvatar) av = userDoc.data().customAvatar;
+        if (userDoc.exists() && userDoc.data().customAvatar) {
+            av = userDoc.data().customAvatar;
         } else {
-            await setDoc(userRef, { displayName: user.displayName, email: user.email, customAvatar: user.photoURL });
+            await setDoc(userRef, { displayName: user.displayName, email: user.email, customAvatar: user.photoURL }, { merge: true });
         }
 
         document.getElementById('menu-avatar').src = av;
@@ -180,14 +198,6 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('profile-name-big').innerText = user.displayName;
 
         loadFeed(); loadChat();
-        
-        // Push-сповіщення
-        try {
-            const m = getMessaging();
-            const r = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-            const t = await getToken(m, { serviceWorkerRegistration: r, vapidKey: VAPID_KEY });
-            if(t) await setDoc(userRef, { fcmToken: t }, { merge: true });
-        } catch(e) {}
     } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('app-container').classList.add('hidden');
@@ -197,4 +207,5 @@ onAuthStateChanged(auth, async (user) => {
 document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
 document.getElementById('btn-logout-menu').onclick = () => signOut(auth);
 document.getElementById('btn-publish').onclick = publishPost;
+document.getElementById('theme-toggle').onclick = () => document.body.classList.toggle('light-theme');
 window.deleteItem = async (c, i) => { if(confirm("Видалити?")) await deleteDoc(doc(db, c, i)); };
