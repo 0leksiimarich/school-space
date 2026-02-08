@@ -1,83 +1,72 @@
 import { auth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-// --- ТВОЇ ДАНІ ---
+// --- НАЛАШТУВАННЯ ---
 const ADMINS = ['v5DxqguPUjTi1vtgtzgjZyyrlUf2']; 
 const VAPID_KEY = "BGoAZAFZGj7h_2UmeYawbzieb1Z5DWMPY_XDvNCQlm3_OpjEX1Jx_rL8trsZ9zZQ06CeOqXTeD6WEKIidp6YfFA";
 
-// Елементи інтерфейсу
+// Елементи
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('menu-overlay');
 const burgerBtn = document.getElementById('burger-btn');
-const pageTitle = document.getElementById('page-title');
-const navLinks = document.querySelectorAll('.nav-link');
 
-// 1. ЛОГІКА МЕНЮ
-function toggleMenu(open) {
-    if (open) {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-    } else {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    }
-}
+// --- 1. ОЖИВЛЯЄМО КНОПКИ ---
+function bindAllButtons() {
+    if (burgerBtn) burgerBtn.onclick = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    if (overlay) overlay.onclick = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
 
-// 2. ІНІЦІАЛІЗАЦІЯ КНОПОК (Оживляємо їх)
-function bindButtons() {
-    if (burgerBtn) burgerBtn.onclick = () => toggleMenu(true);
-    if (overlay) overlay.onclick = () => toggleMenu(false);
+    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
+    document.getElementById('btn-logout-menu').onclick = () => signOut(auth);
+    document.getElementById('btn-publish').onclick = publishPost;
+    document.getElementById('btn-send-msg').onclick = sendMessage;
+    document.getElementById('btn-edit-avatar').onclick = () => document.getElementById('emoji-picker').classList.toggle('hidden');
 
-    const btnGoogle = document.getElementById('btn-google');
-    if (btnGoogle) btnGoogle.onclick = () => signInWithPopup(auth, googleProvider);
-
-    const btnLogout = document.getElementById('btn-logout-menu');
-    if (btnLogout) btnLogout.onclick = () => signOut(auth);
-
-    const btnPublish = document.getElementById('btn-publish');
-    if (btnPublish) btnPublish.onclick = publishPost;
-
-    const btnSendMsg = document.getElementById('btn-send-msg');
-    if (btnSendMsg) btnSendMsg.onclick = sendMessage;
-
-    const msgInput = document.getElementById('msg-input');
-    if (msgInput) {
-        msgInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-    }
-
-    navLinks.forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
         link.onclick = (e) => {
             e.preventDefault();
             const target = link.getAttribute('data-target');
-            switchPage(target, link.innerText.trim());
-            navLinks.forEach(l => l.classList.remove('active'));
+            showPage(target, link.innerText.trim());
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            toggleMenu(false);
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
         };
+    });
+
+    document.querySelectorAll('.emoji-item').forEach(el => {
+        el.onclick = () => setEmojiAvatar(el.innerText);
     });
 }
 
-function switchPage(id, title) {
+function showPage(id, title) {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById(`page-${id}`).classList.remove('hidden');
-    pageTitle.innerText = title;
+    document.getElementById('page-title').innerText = title;
+    if (id === 'profile') loadMyPosts();
 }
 
-// 3. WEB PUSH
-async function setupPush(user) {
-    try {
-        const messaging = getMessaging();
-        const reg = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
-        const token = await getToken(messaging, { serviceWorkerRegistration: reg, vapidKey: VAPID_KEY });
-        if (token) {
-            await setDoc(doc(db, "users", user.uid), { fcmToken: token, name: user.displayName }, { merge: true });
-        }
-    } catch (e) { console.warn("Пуші не активні"); }
+// --- 2. АВАТАРКИ ТА ПРОФІЛЬ ---
+async function setEmojiAvatar(emoji) {
+    const user = auth.currentUser;
+    const customUrl = `https://ui-avatars.com/api/?name=${emoji}&background=random&size=128`;
+    await setDoc(doc(db, "users", user.uid), { customAvatar: customUrl }, { merge: true });
+    updateUI(user); // Миттєво оновити картинку
+    document.getElementById('emoji-picker').classList.add('hidden');
 }
 
-// 4. КОНТЕНТ (Пости / Чат)
+async function updateUI(user) {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const finalAvatar = userDoc.exists() && userDoc.data().customAvatar ? userDoc.data().customAvatar : user.photoURL;
+    
+    document.getElementById('menu-avatar').src = finalAvatar;
+    document.getElementById('profile-avatar-big').src = finalAvatar;
+    document.getElementById('menu-username').innerText = user.displayName;
+    document.getElementById('profile-name-big').innerText = user.displayName;
+}
+
+// --- 3. ПОСТИ ТА ЧАТ ---
 async function publishPost() {
     const txt = document.getElementById('post-text').value;
     const file = document.getElementById('post-file-input').files[0];
@@ -111,30 +100,22 @@ window.deleteItem = async (col, id) => {
     if (confirm("Видалити?")) await deleteDoc(doc(db, col, id));
 };
 
-// 5. МОНІТОРИНГ СТАНУ
+// --- 4. МОНІТОРИНГ ТА ЗАВАНТАЖЕННЯ ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
-        
-        document.getElementById('menu-avatar').src = user.photoURL;
-        document.getElementById('menu-username').innerText = user.displayName;
-        document.getElementById('profile-avatar-big').src = user.photoURL;
-        document.getElementById('profile-name-big').innerText = user.displayName;
-
-        const isAdmin = ADMINS.includes(user.uid);
-        loadFeed(isAdmin);
-        loadChat(isAdmin);
-        setupPush(user);
-        bindButtons(); // Переприв'язуємо кнопки після входу
+        updateUI(user);
+        loadFeed(ADMINS.includes(user.uid));
+        loadChat(ADMINS.includes(user.uid));
+        bindAllButtons();
     } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('app-container').classList.add('hidden');
-        bindButtons(); // Переприв'язуємо для кнопки входу
+        bindAllButtons();
     }
 });
 
-// 6. ЗАВАНТАЖЕННЯ ДАНИХ
 function loadFeed(isAdmin) {
     onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
         const container = document.getElementById('feed-container');
@@ -144,13 +125,23 @@ function loadFeed(isAdmin) {
             const canDel = isAdmin || p.uid === auth.currentUser.uid;
             container.innerHTML += `
                 <div class="post-card">
-                    <div class="post-header">
-                        <strong>${p.name}</strong>
-                        ${canDel ? `<i class="fas fa-trash" onclick="deleteItem('posts', '${d.id}')" style="cursor:pointer;color:#ec3942"></i>` : ''}
-                    </div>
-                    <div>${p.text}</div>
+                    <strong>${p.name}</strong> ${canDel ? `<span onclick="deleteItem('posts', '${d.id}')" style="color:red; float:right; cursor:pointer;">×</span>` : ''}
+                    <p>${p.text}</p>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                 </div>`;
+        });
+    });
+}
+
+function loadMyPosts() {
+    const container = document.getElementById('my-posts-container');
+    onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
+        container.innerHTML = '';
+        snap.forEach(d => {
+            const p = d.data();
+            if (p.uid === auth.currentUser.uid) {
+                container.innerHTML += `<div class="post-card"><p>${p.text}</p>${p.image ? `<img src="${p.image}" class="post-img">` : ''}</div>`;
+            }
         });
     });
 }
@@ -161,20 +152,15 @@ function loadChat(isAdmin) {
         chat.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
-            const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
-            const canDel = isAdmin || isMe;
+            const isMe = m.uid === auth.currentUser.uid;
             chat.innerHTML += `
-                <div class="msg-wrapper ${isMe ? 'my-msg' : 'other-msg'}">
-                    <div class="msg-bubble">
-                        ${!isMe ? `<div style="font-size:12px;color:#40a7e3;font-weight:bold">${m.name}</div>` : ''}
-                        <div>${m.text}</div>
-                        ${canDel ? `<div class="msg-del" onclick="deleteItem('messages', '${d.id}')">Видалити</div>` : ''}
-                    </div>
+                <div class="msg-bubble ${isMe ? 'my-msg' : 'other-msg'}">
+                    ${!isMe ? `<small style="color:#40a7e3">${m.name}</small><br>` : ''}
+                    ${m.text}
                 </div>`;
         });
         chat.scrollTop = chat.scrollHeight;
     });
 }
 
-// Запуск при завантаженні
-bindButtons();
+bindAllButtons();
