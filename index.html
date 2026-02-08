@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme"> <div id="auth-container" class="auth-overlay">
+<body class="dark-theme">
+
+    <div id="auth-container" class="auth-overlay">
         <div class="login-box">
             <h1>SchoolSpace</h1>
-            <p>Увійдіть, щоб почати</p>
             <button id="btn-google" class="tg-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
         </div>
     </div>
@@ -20,25 +21,21 @@
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img id="menu-avatar" src="" alt="" class="menu-avatar">
-                <div class="user-info">
-                    <div id="menu-username" class="username">Завантаження...</div>
-                    <div class="status">online</div>
-                </div>
+                <img id="menu-avatar" src="" class="menu-avatar">
+                <div id="menu-username" class="username">Користувач</div>
+                <div class="status">online</div>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-newspaper"></i> Стрічка</a>
                 <a href="#" class="nav-link" data-target="chat"><i class="fas fa-comments"></i> Чат</a>
-                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user-circle"></i> Профіль</a>
+                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Профіль</a>
             </nav>
-            <div class="sidebar-footer">
-                <button id="btn-logout-menu"><i class="fas fa-sign-out-alt"></i> Вийти</button>
-            </div>
+            <button id="btn-logout-menu" class="logout-btn">Вийти</button>
         </aside>
 
         <header class="tg-header">
             <i class="fas fa-bars header-icon" id="burger-btn"></i>
-            <span class="header-title" id="page-title">Стрічка</span>
+            <span id="page-title">Стрічка</span>
         </header>
 
         <main class="main-content">
@@ -47,7 +44,7 @@
                     <textarea id="post-text" placeholder="Що цікавого?"></textarea>
                     <div class="post-actions">
                         <label for="post-file-input" class="file-btn"><i class="fas fa-camera"></i> Фото</label>
-                        <input type="file" id="post-file-input" accept="image/*" hidden>
+                        <input type="file" id="post-file-input" hidden>
                         <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
                     </div>
                 </div>
@@ -58,7 +55,7 @@
                 <div class="chat-container">
                     <div id="chat-messages" class="messages-area"></div>
                     <div class="chat-input-bar">
-                        <input type="text" id="msg-input" placeholder="Повідомлення...">
+                        <input type="text" id="msg-input" placeholder="Написати повідомлення...">
                         <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -67,28 +64,19 @@
             <section id="page-profile" class="page hidden">
                 <div class="profile-card">
                     <div class="avatar-wrapper">
-                        <img id="profile-avatar-big" src="" alt="">
-                        <button id="btn-edit-avatar" class="edit-badge">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
+                        <img id="profile-avatar-big" src="">
+                        <button id="btn-edit-avatar" class="edit-badge"><i class="fas fa-pencil-alt"></i></button>
                     </div>
                     <h2 id="profile-name-big"></h2>
-
                     <div id="emoji-picker" class="hidden">
                         <div class="emoji-list">
                             <span class="emoji-item">😎</span><span class="emoji-item">🐱</span>
-                            <span class="emoji-item">👻</span><span class="emoji-item">🤖</span>
-                            <span class="emoji-item">🔥</span><span class="emoji-item">🎓</span>
+                            <span class="emoji-item">🤖</span><span class="emoji-item">🔥</span>
                         </div>
                     </div>
-
-                    <div class="theme-switcher">
-                        <p>Тема оформлення:</p>
-                        <button id="theme-toggle" class="tg-btn-small">Змінити тему</button>
-                    </div>
-
-                    <div class="profile-posts-section">
-                        <h3>Мої публікації</h3>
+                    <button id="theme-toggle" class="tg-btn-small">Змінити тему</button>
+                    <div class="my-posts">
+                        <h3>Мої пости</h3>
                         <div id="my-posts-container"></div>
                     </div>
                 </div>
