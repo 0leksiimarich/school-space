@@ -1,77 +1,84 @@
-/* Основні налаштування */
-* { box-sizing: border-box; }
-body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, "Roboto", Helvetica, Arial, sans-serif;
-    background-color: #0e1621; /* Основний темний фон */
-    color: white;
-    overflow: hidden; /* Щоб не було подвійних скролів */
+:root {
+    --bg-main: #0e1621; /* Темний фон Telegram */
+    --bg-panel: #17212b; /* Фон шапки і панелей */
+    --tg-accent: #40a7e3; /* Блакитний акцент */
+    --text-primary: #ffffff;
+    --text-secondary: #8ba0b3;
+    --msg-my: #2b5278;
+    --msg-other: #182533;
 }
+
+body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; background: var(--bg-main); color: var(--text-primary); overflow-x: hidden; }
 .hidden { display: none !important; }
+* { box-sizing: border-box; }
 
 /* --- АВТОРИЗАЦІЯ --- */
-.auth-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #17212b; display: flex; justify-content: center; align-items: center; z-index: 100;
-}
-.login-box { text-align: center; padding: 30px; background: #1f2936; border-radius: 10px; }
-.tg-logo-big { font-size: 60px; color: #5288c1; margin-bottom: 20px; }
-.tg-login-btn {
-    background: #5288c1; color: white; border: none; padding: 12px 25px;
-    border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 20px; width: 100%;
-}
+.auth-overlay { position: fixed; inset: 0; background: var(--bg-main); display: flex; justify-content: center; align-items: center; z-index: 200; }
+.login-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; text-align: center; }
+.tg-btn { background: var(--tg-accent); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 20px; }
 
-/* --- ШАПКА ЧАТУ --- */
-.tg-header {
-    height: 55px; background: #17212b; display: flex; align-items: center;
-    justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #0e1621;
-}
-.chat-title { font-weight: bold; font-size: 18px; margin-left: 15px; }
-.menu-icon { color: #6c7883; font-size: 20px; cursor: pointer; }
-.logout-btn { background: none; border: none; color: #ff5e5e; font-size: 20px; cursor: pointer; margin-left: 15px; }
+/* --- ШАПКА --- */
+.tg-header { height: 55px; background: var(--bg-panel); display: flex; align-items: center; padding: 0 15px; position: fixed; top: 0; width: 100%; z-index: 50; border-bottom: 1px solid #000; }
+.header-icon { font-size: 24px; color: var(--text-secondary); cursor: pointer; margin-right: 20px; }
+.header-title { font-size: 18px; font-weight: bold; }
 
-/* --- ОБЛАСТЬ ПОВІДОМЛЕНЬ --- */
-.chat-viewport {
-    /* Фон як у стандартному ТГ */
-    background-color: #0e1621;
-    background-image: url('https://web.telegram.org/img/bg_dark.png');
-    background-repeat: repeat;
-    height: calc(100vh - 110px); /* Висота екрану мінус шапка і підвал */
-    overflow-y: auto; /* Прокрутка тільки тут */
+/* --- БІЧНЕ МЕНЮ (САЙДБАР) --- */
+.sidebar {
+    position: fixed; top: 0; left: -280px; /* Сховано за екраном */
+    width: 280px; height: 100%; background: var(--bg-panel); z-index: 100;
+    transition: left 0.3s ease; display: flex; flex-direction: column;
 }
-.messages-container { padding: 10px 15px; display: flex; flex-direction: column; gap: 5px; }
+.sidebar.active { left: 0; /* Виїжджає */ }
+.menu-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.menu-overlay.active { opacity: 1; pointer-events: auto; }
 
-/* Бульбашки повідомлень */
-.msg-row { display: flex; width: 100%; }
-.my-msg { justify-content: flex-end; }
-.other-msg { justify-content: flex-start; }
+.sidebar-header { padding: 20px; background: #232e3c; display: flex; align-items: center; }
+.menu-avatar { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; }
+.sidebar-nav { flex: 1; padding: 20px 0; }
+.nav-link { display: block; padding: 15px 20px; color: var(--text-primary); text-decoration: none; font-size: 16px; display: flex; align-items: center; }
+.nav-link i { margin-right: 15px; width: 25px; text-align: center; color: var(--text-secondary); }
+.nav-link.active { background: rgba(64, 167, 227, 0.1); color: var(--tg-accent); }
+.nav-link.active i { color: var(--tg-accent); }
+.sidebar-footer { padding: 20px; border-top: 1px solid #000; }
+#btn-logout-menu { background: none; border: none; color: #ff5e5e; cursor: pointer; font-size: 16px; display: flex; align-items: center; }
+#btn-logout-menu i { margin-right: 15px; }
 
-.bubble {
-    max-width: 80%; padding: 8px 12px; border-radius: 12px;
-    position: relative; word-wrap: break-word; font-size: 15px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-/* Твої повідомлення (сині) */
-.my-msg .bubble { background: #2b5278; border-bottom-right-radius: 2px; }
-/* Чужі повідомлення (сірі) */
-.other-msg .bubble { background: #182533; border-bottom-left-radius: 2px; }
+/* --- КОНТЕНТ --- */
+.main-content { margin-top: 55px; height: calc(100vh - 55px); }
+.page { height: 100%; overflow-y: auto; padding-bottom: 20px; }
 
-.sender-name { font-size: 13px; font-weight: bold; color: #64b5ef; margin-bottom: 4px; }
-.msg-time { font-size: 11px; color: #8ba0b3; text-align: right; margin-top: 4px; }
+/* СТРІЧКА (Інста-стиль) */
+.create-post-box { background: var(--bg-panel); padding: 15px; margin-bottom: 10px; }
+.create-post-box textarea { width: 100%; background: #0e1621; border: none; color: white; padding: 10px; resize: none; border-radius: 5px; }
+.post-actions { display: flex; justify-content: space-between; margin-top: 10px; align-items: center; }
+.file-btn { color: var(--text-secondary); cursor: pointer; }
+.tg-btn-small { background: var(--tg-accent); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
 
-/* --- ПАНЕЛЬ ВВОДУ --- */
-.chat-input-bar {
-    height: 55px; background: #17212b; display: flex; align-items: center;
-    padding: 0 10px; position: absolute; bottom: 0; width: 100%;
-}
-#msg-input {
-    flex: 1; background: transparent; border: none; color: white;
-    font-size: 16px; padding: 10px; outline: none;
-}
-.input-icon { color: #6c7883; font-size: 24px; padding: 10px; cursor: pointer; }
-.attach-icon { transform: rotate(45deg); }
-.send-btn {
-    background: none; border: none; color: #5288c1; font-size: 28px;
-    padding: 0 10px; cursor: pointer; transition: color 0.2s;
-}
-.send-btn:hover { color: #40a7e3; }
+.post-card { background: var(--bg-panel); margin-bottom: 10px; padding: 15px; }
+.post-header { font-weight: bold; margin-bottom: 10px; color: var(--tg-accent); }
+.post-img { width: 100%; border-radius: 5px; margin-top: 10px; }
+.del-post-btn { color: #ff5e5e; float: right; cursor: pointer; font-size: 14px; }
+
+/* ЧАТ (Телеграм-стиль) */
+.chat-container { height: 100%; display: flex; flex-direction: column; background-image: url('https://web.telegram.org/img/bg_dark.png'); }
+.messages-area { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+.chat-input-bar { background: var(--bg-panel); padding: 10px; display: flex; gap: 10px; }
+#msg-input { flex: 1; background: none; border: none; color: white; padding: 10px; }
+#btn-send-msg { background: none; border: none; color: var(--tg-accent); font-size: 24px; cursor: pointer; }
+
+.msg-wrapper { display: flex; flex-direction: column; max-width: 80%; }
+.my-msg { align-self: flex-end; align-items: flex-end; }
+.other-msg { align-self: flex-start; }
+.msg-bubble { padding: 8px 12px; border-radius: 12px; position: relative; word-wrap: break-word; }
+.my-msg .msg-bubble { background: var(--msg-my); border-bottom-right-radius: 2px; }
+.other-msg .msg-bubble { background: var(--msg-other); border-bottom-left-radius: 2px; }
+.msg-sender { font-size: 12px; color: var(--tg-accent); font-weight: bold; }
+.msg-del { position: absolute; top: -8px; right: -8px; background: #ff5e5e; color: white; width: 18px; height: 18px; border-radius: 50%; text-align: center; line-height: 18px; font-size: 12px; cursor: pointer; display: none;}
+.msg-wrapper:hover .msg-del { display: block; }
+
+/* ПРОФІЛЬ */
+.profile-card { text-align: center; padding: 50px 20px; }
+#profile-avatar-big { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 20px; }
