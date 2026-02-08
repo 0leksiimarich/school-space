@@ -2,17 +2,17 @@ import { auth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; // Твій UID
+const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; 
 let isInitialLoad = true;
 
-// --- ПЛЮШКИ: Сповіщення ---
+// Сповіщення
 function sendPush(title, msg) {
     if (Notification.permission === "granted" && !isInitialLoad) {
-        new Notification(title, { body: msg, icon: "https://cdn-icons-png.flaticon.com/512/1182/1182769.png" });
+        new Notification(title, { body: msg, icon: "https://i.ibb.co/mF7mXyS/logo.png" });
     }
 }
 
-// --- ПЛЮШКИ: Медіа ---
+// Стиснення фото
 async function compress(file) {
     return new Promise(res => {
         const reader = new FileReader();
@@ -30,17 +30,20 @@ async function compress(file) {
     });
 }
 
+// YouTube детектор
 function getVideo(text) {
     const m = text.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
     return (m && m[2].length === 11) ? `<div class="video-container"><iframe src="https://www.youtube.com/embed/${m[2]}" frameborder="0" allowfullscreen></iframe></div>` : '';
 }
 
-// --- ЛОГІКА САЙТУ ---
+// Навігація
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById(`page-${id}`).classList.remove('hidden');
     document.getElementById('sidebar').classList.remove('active');
     document.getElementById('menu-overlay').classList.remove('active');
+    const titles = {feed:'Стрічка', contacts:'Учасники', help:'Поміч', profile:'Профіль'};
+    document.getElementById('page-title').innerText = titles[id];
     if(id === 'contacts') loadUsers();
 };
 
@@ -51,14 +54,12 @@ function loadFeed() {
     onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
         const cont = document.getElementById('feed-container');
         cont.innerHTML = '';
-        
         snap.docChanges().forEach(change => {
             if (change.type === "added") {
                 const p = change.doc.data();
                 sendPush(`Новий пост від ${p.name}`, p.text);
             }
         });
-
         snap.forEach(d => {
             const p = d.data();
             const isAdmin = auth.currentUser?.uid === ADMIN_UID;
@@ -92,7 +93,6 @@ function loadUsers() {
     });
 }
 
-// --- ОБРОБНИКИ ---
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('burger-btn').onclick = () => {
         document.getElementById('sidebar').classList.add('active');
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('menu-overlay').classList.remove('active');
     };
-
     document.getElementById('btn-publish').onclick = async () => {
         const btn = document.getElementById('btn-publish');
         const txt = document.getElementById('post-text').value;
@@ -114,18 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('post-text').value = "";
         btn.disabled = false;
     };
-
     document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
     document.getElementById('btn-logout').onclick = () => signOut(auth);
-
-    document.getElementById('avatar-upload').onchange = async (e) => {
-        const file = e.target.files[0];
-        if(file) {
-            const base64 = await compress(file);
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { customAvatar: base64 });
-            location.reload();
-        }
-    };
 });
 
 onAuthStateChanged(auth, async (u) => {
@@ -136,14 +125,13 @@ onAuthStateChanged(auth, async (u) => {
             return;
         }
         if (!d.exists()) await setDoc(doc(db, "users", u.uid), { displayName: u.displayName, banned: false });
-        
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
-        document.getElementById('menu-avatar').src = d.data()?.customAvatar || u.photoURL;
-        document.getElementById('profile-avatar-big').src = d.data()?.customAvatar || u.photoURL;
+        const av = d.data()?.customAvatar || u.photoURL;
+        document.getElementById('menu-avatar').src = av;
+        document.getElementById('profile-avatar-big').src = av;
         document.getElementById('menu-username').innerText = u.displayName;
         document.getElementById('profile-name-big').innerText = u.displayName;
-        
         Notification.requestPermission();
         loadFeed();
     } else {
