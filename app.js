@@ -4,8 +4,8 @@ import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, d
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
 // --- НАЛАШТУВАННЯ ---
-const ADMINS = ['ТВІЙ_UID_ЯКИЙ_ТИ_ЗНАЙШОВ']; 
-const VAPID_KEY = "ТВІЙ_VAPID_КЛЮЧ_З_FIREBASE"; // Знайди в Cloud Messaging -> Web Push certificates
+const ADMINS = ['v5DxqguPUjTi1vtgtzgjZyyrlUf2']; 
+const VAPID_KEY = "BGoAZAFZGj7h_2UmeYawbzieb1Z5DWMPY_XDvNCQlm3_OpjEX1Jx_rL8trsZ9zZQ06CeOqXTeD6WEKIidp6YfFA"; // Знайди в Cloud Messaging -> Web Push certificates
 
 // Перемикання сторінок
 window.showPage = (id, title) => {
