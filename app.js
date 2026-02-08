@@ -4,7 +4,7 @@ import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstati
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- НАЛАШТУВАННЯ АДМІНІВ ---
-const ADMINS = ['']; // Сюди впишеш свій UID з консолі
+const ADMINS = ['v5DxqguPUjTi1vtgtzgjZyyrlUf2']; // Сюди впишеш свій UID з консолі
 
 // Глобальні функції (щоб працювали з HTML)
 window.deleteMsg = async (id) => {
