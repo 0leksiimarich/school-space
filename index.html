@@ -3,19 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SchoolSpace</title>
+    <title>SchoolSpace Official</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* ВБУДОВАНИЙ CSS - ТЕПЕР ВІН ТОЧНО СПРАЦЮЄ */
+        :root {
+            --bg: #0e1621; --panel: #17212b; --accent: #40a7e3; 
+            --text: #ffffff; --text-sec: #8ba0b3; --border: #232e3c;
+        }
+
+        .light-theme {
+            --bg: #f0f2f5; --panel: #ffffff; --accent: #0088cc; 
+            --text: #000000; --text-sec: #65676b; --border: #dddfe2;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg); color: var(--text); overflow: hidden; 
+        }
+
+        .hidden { display: none !important; }
+
+        /* Авторизація на весь екран */
+        .auth-overlay { 
+            position: fixed; inset: 0; background: var(--bg); 
+            display: flex; align-items: center; justify-content: center; z-index: 2000; 
+        }
+        .login-box { 
+            background: var(--panel); padding: 40px; border-radius: 20px; 
+            text-align: center; width: 90%; max-width: 350px; border: 1px solid var(--border);
+        }
+
+        /* Шапка */
+        .tg-header { 
+            height: 60px; background: var(--panel); display: flex; 
+            align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border);
+            position: fixed; top: 0; width: 100%; z-index: 100;
+        }
+        .header-icon { font-size: 22px; color: var(--text-sec); cursor: pointer; margin-right: 20px; }
+
+        /* Сайдбар (Меню) */
+        .sidebar { 
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%; 
+            background: var(--panel); z-index: 1000; transition: 0.3s; 
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+        
+        .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
+        .menu-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; margin-bottom: 10px; }
+        
+        .nav-link { 
+            display: flex; align-items: center; padding: 15px 20px; 
+            color: var(--text); text-decoration: none; gap: 20px; transition: 0.2s;
+        }
+        .nav-link:hover, .nav-link.active { background: rgba(64, 167, 227, 0.1); color: var(--accent); }
+
+        /* Контентна частина */
+        .main-content { 
+            margin-top: 60px; height: calc(100vh - 60px); 
+            overflow-y: auto; padding: 10px; width: 100%;
+        }
+
+        /* Картки постів */
+        .post-card { 
+            background: var(--panel); border-radius: 12px; padding: 15px; 
+            margin-bottom: 10px; border: 1px solid var(--border); width: 100%;
+        }
+        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; display: block; }
+
+        /* Чат */
+        .chat-container { height: 100%; display: flex; flex-direction: column; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-input-bar { 
+            background: var(--panel); padding: 10px; display: flex; gap: 10px; 
+            border-top: 1px solid var(--border);
+        }
+        .chat-input-bar input { 
+            flex: 1; background: var(--bg); border: none; color: white; 
+            padding: 10px 15px; border-radius: 20px; outline: none;
+        }
+
+        /* Профіль */
+        .profile-card { text-align: center; padding: 20px; }
+        .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
+        #profile-avatar-big { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--accent); }
+        .edit-badge { 
+            position: absolute; bottom: 5px; right: 5px; background: var(--accent); 
+            color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer;
+        }
+
+        /* Кнопки */
+        .tg-btn { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
+        .tg-btn-small { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+
+        .menu-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+            z-index: 900; display: none; 
+        }
+        .menu-overlay.active { display: block; }
+    </style>
 </head>
 <body class="dark-theme">
 
     <div id="auth-container" class="auth-overlay">
-        <div class="login-card">
-            <h1>SchoolSpace</h1>
-            <p>Твій освітній простір</p>
-            <button id="btn-google" class="tg-btn-main">
-                <i class="fab fa-google"></i> Увійти через Google
-            </button>
+        <div class="login-box">
+            <h1 style="color: var(--accent);">SchoolSpace</h1>
+            <p style="color: var(--text-sec);">Вхід у систему</p>
+            <button id="btn-google" class="tg-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
         </div>
     </div>
 
@@ -23,71 +122,72 @@
         <div id="menu-overlay" class="menu-overlay"></div>
 
         <aside id="sidebar" class="sidebar">
-            <div class="sidebar-user">
-                <img id="menu-avatar" src="" alt="Avatar">
-                <div class="user-details">
-                    <span id="menu-username">Завантаження...</span>
-                    <small>online</small>
-                </div>
+            <div class="sidebar-header">
+                <img id="menu-avatar" src="" class="menu-avatar">
+                <div id="menu-username" style="font-weight: bold;">Користувач</div>
+                <div style="font-size: 12px; opacity: 0.8;">online</div>
             </div>
-            <nav class="sidebar-links">
-                <a href="#" class="nav-item active" data-target="feed"><i class="fas fa-home"></i> Стрічка</a>
-                <a href="#" class="nav-item" data-target="chat"><i class="fas fa-paper-plane"></i> Чат</a>
-                <a href="#" class="nav-item" data-target="profile"><i class="fas fa-user-circle"></i> Профіль</a>
+            <nav style="flex: 1;">
+                <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-home"></i> Стрічка</a>
+                <a href="#" class="nav-link" data-target="chat"><i class="fas fa-paper-plane"></i> Чат</a>
+                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Профіль</a>
             </nav>
-            <div class="sidebar-bottom">
-                <button id="btn-logout-menu" class="logout-link"><i class="fas fa-sign-out-alt"></i> Вийти</button>
-            </div>
+            <button id="btn-logout-menu" class="nav-link" style="border: none; background: none; width: 100%; color: #ff5959;">
+                <i class="fas fa-sign-out-alt"></i> Вийти
+            </button>
         </aside>
 
-        <header class="app-header">
-            <button id="burger-btn" class="icon-btn"><i class="fas fa-bars"></i></button>
-            <h2 id="page-title">Стрічка</h2>
-            <div class="header-right"></div>
+        <header class="tg-header">
+            <i class="fas fa-bars header-icon" id="burger-btn"></i>
+            <strong id="page-title">Стрічка</strong>
         </header>
 
-        <main class="app-content">
-            <section id="page-feed" class="page-view">
-                <div class="post-creator">
-                    <textarea id="post-text" placeholder="Що у вас нового?"></textarea>
-                    <div class="creator-toolbar">
-                        <label for="post-file-input" class="attach-btn"><i class="fas fa-image"></i> Фото</label>
+        <main class="main-content">
+            <section id="page-feed" class="page">
+                <div class="post-card">
+                    <textarea id="post-text" placeholder="Що цікавого?" style="width: 100%; background: var(--bg); border: none; color: white; padding: 10px; border-radius: 8px; resize: none;"></textarea>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <label for="post-file-input" class="tg-btn-small" style="background: #232e3c;"><i class="fas fa-camera"></i> Фото</label>
                         <input type="file" id="post-file-input" accept="image/*" hidden>
-                        <button id="btn-publish" class="publish-btn">Опублікувати</button>
+                        <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
                     </div>
                 </div>
                 <div id="feed-container"></div>
             </section>
 
-            <section id="page-chat" class="page-view hidden">
-                <div class="chat-wrapper">
-                    <div id="chat-messages" class="chat-history"></div>
-                    <div class="chat-input-area">
+            <section id="page-chat" class="page hidden">
+                <div class="chat-container">
+                    <div id="chat-messages" class="messages-area"></div>
+                    <div class="chat-input-bar">
                         <input type="text" id="msg-input" placeholder="Повідомлення...">
-                        <button id="btn-send-msg"><i class="fas fa-arrow-up"></i></button>
+                        <button id="btn-send-msg" style="background: var(--accent); border: none; color: white; border-radius: 50%; width: 35px; height: 35px;"><i class="fas fa-arrow-up"></i></button>
                     </div>
                 </div>
             </section>
 
-            <section id="page-profile" class="page-view hidden">
-                <div class="profile-header">
-                    <div class="profile-avatar-box">
+            <section id="page-profile" class="page hidden">
+                <div class="profile-card">
+                    <div class="avatar-wrapper">
                         <img id="profile-avatar-big" src="">
-                        <button id="btn-edit-avatar" class="avatar-edit-icon"><i class="fas fa-pen"></i></button>
+                        <button id="btn-edit-avatar" class="edit-badge"><i class="fas fa-pen"></i></button>
                     </div>
-                    <h2 id="profile-name-big">Ім'я Прізвище</h2>
+                    <h2 id="profile-name-big"></h2>
                     
-                    <div id="emoji-picker" class="emoji-grid hidden">
-                        <span class="emoji-opt">😎</span><span class="emoji-opt">🐱</span>
-                        <span class="emoji-opt">🤖</span><span class="emoji-opt">🔥</span>
-                        <span class="emoji-opt">⭐</span>
+                    <div id="emoji-picker" class="hidden" style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: center; gap: 15px; font-size: 30px;">
+                            <span class="emoji-opt" style="cursor:pointer">😎</span>
+                            <span class="emoji-opt" style="cursor:pointer">🐱</span>
+                            <span class="emoji-opt" style="cursor:pointer">🤖</span>
+                            <span class="emoji-opt" style="cursor:pointer">🔥</span>
+                        </div>
                     </div>
 
-                    <button id="theme-toggle" class="theme-btn">Змінити тему</button>
-                </div>
-                <div class="profile-feed">
-                    <h3>Ваші публікації</h3>
-                    <div id="my-posts-container"></div>
+                    <button id="theme-toggle" class="tg-btn-small" style="background: none; border: 1px solid var(--accent); color: var(--accent);">Змінити тему</button>
+                    
+                    <div style="margin-top: 30px; text-align: left;">
+                        <h3>Мої пости</h3>
+                        <div id="my-posts-container"></div>
+                    </div>
                 </div>
             </section>
         </main>
