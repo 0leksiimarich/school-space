@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace Chat</title>
+    <title>SchoolSpace</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
     <div id="auth-container" class="auth-overlay">
         <div class="auth-box">
             <h1 class="logo-text">SchoolSpace</h1>
@@ -18,37 +17,21 @@
 
     <div id="app-container" class="hidden">
         <header class="tg-header">
-            <div class="header-content">
-                <span class="chat-title">SchoolSpace Chat</span>
-                <i class="fas fa-search header-icon"></i>
-            </div>
+            <span class="chat-title">SchoolSpace Chat</span>
         </header>
 
-        <main class="content-area">
-            <section id="page-messages" class="page">
-                <div class="chat-viewport">
-                    <div id="chat-messages" class="messages-list"></div>
-                    <div class="input-panel">
-                        <i class="far fa-smile panel-icon"></i>
-                        <input type="text" id="msg-input" placeholder="Повідомлення...">
-                        <i class="fas fa-paperclip panel-icon"></i>
-                        <button id="btn-send-msg"><i class="fas fa-paper-plane send-icon"></i></button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="page-profile" class="page hidden">
-                <div class="profile-card">
-                    <img id="prof-avatar" src="" class="large-avatar">
-                    <h2 id="prof-name"></h2>
-                    <button id="btn-logout" class="tg-btn-danger">Вийти</button>
-                </div>
-            </section>
+        <main class="chat-viewport">
+            <div id="chat-messages" class="messages-list"></div>
+            
+            <div class="input-panel">
+                <input type="text" id="msg-input" placeholder="Повідомлення...">
+                <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
+            </div>
         </main>
 
         <nav class="tg-nav">
-            <button class="nav-btn" id="nav-messages"><i class="fas fa-comment"></i></button>
-            <button class="nav-btn" id="nav-profile"><i class="fas fa-user-circle"></i></button>
+            <button class="nav-btn" onclick="location.reload()"><i class="fas fa-sync"></i></button>
+            <button class="nav-btn" id="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
         </nav>
     </div>
 
