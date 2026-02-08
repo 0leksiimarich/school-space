@@ -3,68 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace | Telegram Dark</title>
+    <title>SchoolSpace Chat</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="auth-container" class="modal-overlay">
-        <div class="auth-card">
-            <h1 class="inst-logo-big">SchoolSpace</h1>
-            <p>Увійдіть, щоб почати спілкування</p>
-            <button id="btn-google" class="btn-inst-primary">Увійти з Google</button>
+    <div id="auth-container" class="auth-overlay">
+        <div class="auth-box">
+            <h1 class="logo-text">SchoolSpace</h1>
+            <button id="btn-google" class="tg-btn-primary">Увійти через Google</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
-        <header class="inst-header">
-            <div class="header-inner">
-                <h1 class="inst-logo" id="logo-home">SchoolSpace</h1>
-                <i class="far fa-paper-plane"></i>
+        <header class="tg-header">
+            <div class="header-content">
+                <span class="chat-title">SchoolSpace Chat</span>
+                <i class="fas fa-search header-icon"></i>
             </div>
         </header>
 
-        <main class="main-content">
-            <section id="page-feed" class="page">
-                <div class="create-post-card">
-                    <textarea id="post-text" placeholder="Що нового?"></textarea>
-                    <input type="text" id="post-video-url" placeholder="Посилання на відео (YouTube)..." class="video-input">
-                    <div class="post-controls">
-                        <input type="file" id="post-file" accept="image/*" class="hidden">
-                        <button id="btn-add-photo" class="btn-attachment"><i class="fas fa-camera"></i> Фото</button>
-                        <button id="btn-post" class="btn-publish">Опублікувати</button>
-                    </div>
-                </div>
-                <div id="feed"></div>
-            </section>
-
-            <section id="page-messages" class="page hidden">
-                <div class="chat-container">
-                    <div id="chat-messages" class="chat-messages-area"></div>
-                    <div class="chat-input-area">
-                        <i class="far fa-smile chat-icon"></i>
+        <main class="content-area">
+            <section id="page-messages" class="page">
+                <div class="chat-viewport">
+                    <div id="chat-messages" class="messages-list"></div>
+                    <div class="input-panel">
+                        <i class="far fa-smile panel-icon"></i>
                         <input type="text" id="msg-input" placeholder="Повідомлення...">
-                        <button id="btn-send-msg" style="background:none; border:none;">
-                            <i class="fas fa-paper-plane chat-icon" style="color: #8774e1;"></i>
-                        </button>
+                        <i class="fas fa-paperclip panel-icon"></i>
+                        <button id="btn-send-msg"><i class="fas fa-paper-plane send-icon"></i></button>
                     </div>
                 </div>
             </section>
 
             <section id="page-profile" class="page hidden">
-                <div class="profile-header">
-                    <img id="prof-avatar" src="" class="user-thumb-large">
-                    <h2 id="prof-name">Завантаження...</h2>
-                    <button id="btn-logout" class="btn-secondary">Вийти з акаунту</button>
+                <div class="profile-card">
+                    <img id="prof-avatar" src="" class="large-avatar">
+                    <h2 id="prof-name"></h2>
+                    <button id="btn-logout" class="tg-btn-danger">Вийти</button>
                 </div>
             </section>
         </main>
 
-        <nav class="bottom-nav">
-            <button class="nav-item" id="nav-feed"><i class="fas fa-home"></i></button>
-            <button class="nav-item" id="nav-messages"><i class="fab fa-facebook-messenger"></i></button>
-            <button class="nav-item" id="nav-profile"><i class="far fa-user"></i></button>
+        <nav class="tg-nav">
+            <button class="nav-btn" id="nav-messages"><i class="fas fa-comment"></i></button>
+            <button class="nav-btn" id="nav-profile"><i class="fas fa-user-circle"></i></button>
         </nav>
     </div>
 
