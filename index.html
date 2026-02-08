@@ -2,37 +2,50 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SchoolSpace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram Clone</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div id="auth-container" class="auth-overlay">
-        <div class="auth-box">
-            <h1 class="logo-text">SchoolSpace</h1>
-            <button id="btn-google" class="tg-btn-primary">Увійти через Google</button>
+
+    <div id="auth-container" class="auth-page">
+        <div class="tg-login-card">
+            <div class="tg-logo-circle"><i class="fas fa-paper-plane"></i></div>
+            <h2>Telegram</h2>
+            <p>Будь ласка, увійдіть, щоб почати</p>
+            <button id="btn-google" class="tg-main-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         <header class="tg-header">
-            <span class="chat-title">SchoolSpace Chat</span>
+            <div class="tg-header-left">
+                <i class="fas fa-bars header-icon"></i>
+                <span class="tg-title">SchoolSpace</span>
+            </div>
+            <div class="tg-header-right">
+                <i class="fas fa-search header-icon"></i>
+            </div>
         </header>
 
-        <main class="chat-viewport">
-            <div id="chat-messages" class="messages-list"></div>
-            
-            <div class="input-panel">
-                <input type="text" id="msg-input" placeholder="Повідомлення...">
-                <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
-            </div>
+        <main class="tg-chat-area">
+            <div id="chat-messages" class="tg-messages-container">
+                </div>
         </main>
 
-        <nav class="tg-nav">
-            <button class="nav-btn" onclick="location.reload()"><i class="fas fa-sync"></i></button>
-            <button class="nav-btn" id="btn-logout"><i class="fas fa-sign-out-alt"></i></button>
-        </nav>
+        <footer class="tg-input-bar">
+            <i class="far fa-smile icon-gray"></i>
+            <input type="text" id="msg-input" placeholder="Повідомлення...">
+            <i class="fas fa-paperclip icon-gray"></i>
+            <button id="btn-send-msg">
+                <i class="fas fa-arrow-circle-up send-icon"></i>
+            </button>
+        </footer>
+        
+        <div class="logout-zone">
+            <span id="btn-logout">Вийти з акаунту</span>
+        </div>
     </div>
 
     <script type="module" src="app.js"></script>
