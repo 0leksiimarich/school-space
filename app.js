@@ -1,12 +1,14 @@
+// 1. ІМПОРТИ
 import { auth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-// --- НАЛАШТУВАННЯ ---
+// --- 2. ТВОЇ НАЛАШТУВАННЯ ---
 const ADMINS = ['v5DxqguPUjTi1vtgtzgjZyyrlUf2']; 
-const VAPID_KEY = "BGoAZAFZGj7h_2UmeYawbzieb1Z5DWMPY_XDvNCQlm3_OpjEX1Jx_rL8trsZ9zZQ06CeOqXTeD6WEKIidp6YfFA"; // <--- ДОДАЙ ЦЕ
+const VAPID_KEY = "BGoAZAFZGj7h_2UmeYawbzieb1Z5DWMPY_XDvNCQlm3_OpjEX1Jx_rL8trsZ9zZQ06CeOqXTeD6WEKIidp6YfFA";
 
-// --- ЛОГІКА МЕНЮ ---
+// --- 3. БУРГЕР-МЕНЮ ТА НАВІГАЦІЯ ---
 const sidebar = document.getElementById('sidebar');
 const overlay = document.getElementById('menu-overlay');
 const burgerBtn = document.getElementById('burger-btn');
@@ -23,77 +25,104 @@ function toggleMenu(open) {
     }
 }
 
-burgerBtn.onclick = () => toggleMenu(true);
-overlay.onclick = () => toggleMenu(false);
+if (burgerBtn) burgerBtn.onclick = () => toggleMenu(true);
+if (overlay) overlay.onclick = () => toggleMenu(false);
 
 navLinks.forEach(link => {
     link.onclick = (e) => {
         e.preventDefault();
         const targetId = link.getAttribute('data-target');
         
-        // Ховаємо всі сторінки, показуємо потрібну
         document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
         document.getElementById(`page-${targetId}`).classList.remove('hidden');
         
-        // Оновлюємо заголовок і активне посилання
         pageTitle.innerText = link.innerText.trim();
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
         
-        toggleMenu(false); // Закриваємо меню на мобільному
+        toggleMenu(false);
     };
 });
 
+// --- 4. WEB PUSH СПОВІЩЕННЯ ---
+async function setupNotifications(user) {
+    try {
+        const messaging = getMessaging();
+        const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+        
+        const token = await getToken(messaging, { 
+            serviceWorkerRegistration: registration,
+            vapidKey: VAPID_KEY 
+        });
 
-// --- ОСНОВНА ЛОГІКА ---
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
-    document.getElementById('btn-logout-menu').onclick = () => signOut(auth);
-
-    // Публікація поста
-    document.getElementById('btn-publish').onclick = async () => {
-        const txt = document.getElementById('post-text').value;
-        const file = document.getElementById('post-file-input').files[0];
-        if (!txt && !file) return;
-
-        let imgData = null;
-        if (file) {
-            const reader = new FileReader();
-            imgData = await new Promise(r => { reader.onload = () => r(reader.result); reader.readAsDataURL(file); });
+        if (token) {
+            console.log("Токен отримано!");
+            await setDoc(doc(db, "users", user.uid), {
+                fcmToken: token,
+                name: user.displayName
+            }, { merge: true });
         }
 
-        await addDoc(collection(db, "posts"), {
-            text: txt, image: imgData,
-            uid: auth.currentUser.uid, name: auth.currentUser.displayName,
-            createdAt: serverTimestamp()
+        onMessage(messaging, (payload) => {
+            console.log("Message received: ", payload);
+            alert(`Нове повідомлення: ${payload.notification.body}`);
         });
-        document.getElementById('post-text').value = "";
-        document.getElementById('post-file-input').value = "";
-    };
+    } catch (e) { console.warn("Сповіщення не активовано:", e); }
+}
 
-    // Відправка в чат
-    document.getElementById('btn-send-msg').onclick = async () => {
-        const input = document.getElementById('msg-input');
-        if (!input.value.trim()) return;
-        await addDoc(collection(db, "messages"), {
-            text: input.value, uid: auth.currentUser.uid,
-            name: auth.currentUser.displayName, createdAt: serverTimestamp()
-        });
-        input.value = "";
-    };
-});
+// --- 5. ФУНКЦІЇ ДЛЯ КОНТЕНТУ ---
 
-// Функція видалення
+// Публікація в стрічку
+async function publishPost() {
+    const txt = document.getElementById('post-text').value;
+    const file = document.getElementById('post-file-input').files[0];
+    if (!txt && !file) return;
+
+    let imgData = null;
+    if (file) {
+        const reader = new FileReader();
+        imgData = await new Promise(r => { reader.onload = () => r(reader.result); reader.readAsDataURL(file); });
+    }
+
+    await addDoc(collection(db, "posts"), {
+        text: txt, image: imgData,
+        uid: auth.currentUser.uid, name: auth.currentUser.displayName,
+        createdAt: serverTimestamp()
+    });
+    document.getElementById('post-text').value = "";
+    document.getElementById('post-file-input').value = "";
+}
+
+// Відправка в чат
+async function sendMessage() {
+    const input = document.getElementById('msg-input');
+    if (!input.value.trim()) return;
+    await addDoc(collection(db, "messages"), {
+        text: input.value, uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName, createdAt: serverTimestamp()
+    });
+    input.value = "";
+}
+
 window.deleteItem = async (col, id) => {
     if (confirm("Видалити?")) await deleteDoc(doc(db, col, id));
 };
 
+// --- 6. ОБРОБНИКИ ПОДІЙ ---
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
+    document.getElementById('btn-logout-menu').onclick = () => signOut(auth);
+    document.getElementById('btn-publish').onclick = publishPost;
+    document.getElementById('btn-send-msg').onclick = sendMessage;
+    document.getElementById('msg-input').onkeypress = (e) => { if(e.key === 'Enter') sendMessage(); };
+});
+
+// --- 7. СТАН КОРИСТУВАЧА ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
         
-        // Заповнюємо дані в меню та профілі
         document.getElementById('menu-avatar').src = user.photoURL;
         document.getElementById('menu-username').innerText = user.displayName;
         document.getElementById('profile-avatar-big').src = user.photoURL;
@@ -102,12 +131,14 @@ onAuthStateChanged(auth, (user) => {
         const isAdmin = ADMINS.includes(user.uid);
         loadFeed(isAdmin);
         loadChat(isAdmin);
+        setupNotifications(user);
     } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('app-container').classList.add('hidden');
     }
 });
 
+// --- 8. ЗАВАНТАЖЕННЯ ДАНИХ ---
 function loadFeed(isAdmin) {
     onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
         const container = document.getElementById('feed-container');
@@ -118,10 +149,10 @@ function loadFeed(isAdmin) {
             container.innerHTML += `
                 <div class="post-card">
                     <div class="post-header">
-                        ${p.name}
+                        <strong>${p.name}</strong>
                         ${canDel ? `<i class="fas fa-trash del-post-btn" onclick="deleteItem('posts', '${d.id}')"></i>` : ''}
                     </div>
-                    <div class="post-text">${p.text}</div>
+                    <p>${p.text}</p>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                 </div>`;
         });
@@ -134,7 +165,7 @@ function loadChat(isAdmin) {
         chat.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
-            const isMe = m.uid === auth.currentUser.uid;
+            const isMe = auth.currentUser && m.uid === auth.currentUser.uid;
             const canDel = isAdmin || isMe;
             chat.innerHTML += `
                 <div class="msg-wrapper ${isMe ? 'my-msg' : 'other-msg'}">
