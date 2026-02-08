@@ -1,5 +1,5 @@
-// 1. ІМПОРТ (Тільки один раз!)
-import { auth, db, googleProvider } from './firebase.js';
+// Ми кажемо: візьми auth з файлу, але в цьому файлі називай його myAuth
+import { auth as myAuth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
