@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
+    <link rel="icon" type="image/png" href="ТВОЄ_ПОСИЛАННЯ_НА_ЛОГО">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SchoolSpace Official</title>
@@ -17,6 +18,10 @@
 
         /* UI Layout */
         .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 100; }
+        
+        /* Рядок 25: Стиль для твого логотипу */
+        .header-logo { height: 35px; width: 35px; object-fit: cover; border-radius: 8px; margin-right: 12px; border: 1px solid var(--border); }
+
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 1000; transition: 0.3s; border-right: 1px solid var(--border); }
         .sidebar.active { left: 0; }
         .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
@@ -71,6 +76,7 @@
 
         <header class="tg-header">
             <i class="fas fa-bars" id="burger-btn" style="cursor:pointer; margin-right:20px;"></i>
+            <img src="ТВОЄ_ПОСИЛАННЯ_НА_ЛОГО" class="header-logo" onerror="this.style.display='none'">
             <strong id="page-title">Стрічка</strong>
         </header>
 
@@ -97,7 +103,7 @@
                     <h2>❓ Центр допомоги</h2>
                     <p><b>Відео:</b> Встав посилання на YouTube у текст поста.</p>
                     <p><b>Адмінка:</b> Щоб стати адміном, пиши заявку на пошту:</p>
-                    <p><a href="oleksijmaric20@gmail.com" style="color:var(--accent)">oleksijmaric@gmail.com</a></p>
+                    <p><a href="oleksijmaric20@gmail.com" style="color:var(--accent)">oleksijmaric20@gmail.com</a></p>
                 </div>
             </section>
 
