@@ -4,21 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SchoolSpace</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
-    <div id="auth-container" class="auth-overlay">
+<body class="dark-theme"> <div id="auth-container" class="auth-overlay">
         <div class="login-box">
-            <h1 style="color: #40a7e3;">SchoolSpace</h1>
-            <p style="color: #8ba0b3; margin-bottom: 20px;">Увійдіть, щоб почати спілкування</p>
+            <h1>SchoolSpace</h1>
+            <p>Увійдіть, щоб почати</p>
             <button id="btn-google" class="tg-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
-        
         <div class="menu-overlay" id="menu-overlay"></div>
 
         <aside class="sidebar" id="sidebar">
@@ -32,7 +29,7 @@
             <nav class="sidebar-nav">
                 <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-newspaper"></i> Стрічка</a>
                 <a href="#" class="nav-link" data-target="chat"><i class="fas fa-comments"></i> Чат</a>
-                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Мій профіль</a>
+                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user-circle"></i> Профіль</a>
             </nav>
             <div class="sidebar-footer">
                 <button id="btn-logout-menu"><i class="fas fa-sign-out-alt"></i> Вийти</button>
@@ -45,7 +42,6 @@
         </header>
 
         <main class="main-content">
-            
             <section id="page-feed" class="page">
                 <div class="create-post-box">
                     <textarea id="post-text" placeholder="Що цікавого?"></textarea>
@@ -72,23 +68,27 @@
                 <div class="profile-card">
                     <div class="avatar-wrapper">
                         <img id="profile-avatar-big" src="" alt="">
-                        <button id="btn-edit-avatar" class="edit-badge"><i class="fas fa-pen"></i></button>
+                        <button id="btn-edit-avatar" class="edit-badge">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
                     </div>
                     <h2 id="profile-name-big"></h2>
-                    
+
                     <div id="emoji-picker" class="hidden">
-                        <p>Оберіть смайл-аватар:</p>
                         <div class="emoji-list">
-                            <span class="emoji-item">😎</span>
-                            <span class="emoji-item">🐱</span>
-                            <span class="emoji-item">👻</span>
-                            <span class="emoji-item">🤖</span>
-                            <span class="emoji-item">🔥</span>
+                            <span class="emoji-item">😎</span><span class="emoji-item">🐱</span>
+                            <span class="emoji-item">👻</span><span class="emoji-item">🤖</span>
+                            <span class="emoji-item">🔥</span><span class="emoji-item">🎓</span>
                         </div>
                     </div>
 
-                    <div class="profile-posts">
-                        <h3>Мої пости</h3>
+                    <div class="theme-switcher">
+                        <p>Тема оформлення:</p>
+                        <button id="theme-toggle" class="tg-btn-small">Змінити тему</button>
+                    </div>
+
+                    <div class="profile-posts-section">
+                        <h3>Мої публікації</h3>
                         <div id="my-posts-container"></div>
                     </div>
                 </div>
