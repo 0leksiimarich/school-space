@@ -1,18 +1,17 @@
 import { auth, db, googleProvider } from './firebase.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, setDoc, getDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; 
+const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; // ТВІЙ UID
 let isInitialLoad = true;
 
-// Сповіщення
+// --- ПЛЮШКИ ---
 function sendPush(title, msg) {
     if (Notification.permission === "granted" && !isInitialLoad) {
         new Notification(title, { body: msg, icon: "https://i.ibb.co/mF7mXyS/logo.png" });
     }
 }
 
-// Стиснення фото
 async function compress(file) {
     return new Promise(res => {
         const reader = new FileReader();
@@ -30,69 +29,89 @@ async function compress(file) {
     });
 }
 
-// YouTube детектор
-function getVideo(text) {
-    const m = text.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-    return (m && m[2].length === 11) ? `<div class="video-container"><iframe src="https://www.youtube.com/embed/${m[2]}" frameborder="0" allowfullscreen></iframe></div>` : '';
-}
-
-// Навігація
-window.showPage = (id) => {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById(`page-${id}`).classList.remove('hidden');
-    document.getElementById('sidebar').classList.remove('active');
-    document.getElementById('menu-overlay').classList.remove('active');
-    const titles = {feed:'Стрічка', contacts:'Учасники', help:'Поміч', profile:'Профіль'};
-    document.getElementById('page-title').innerText = titles[id];
-    if(id === 'contacts') loadUsers();
+// --- ЛОГІКА ПОСТІВ (ЛАЙКИ, КОМЕНТАРІ) ---
+window.toggleLike = async (postId, isLiked) => {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+        likes: isLiked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
+    });
 };
 
-window.deletePost = (id) => { if(confirm("Видалити?")) deleteDoc(doc(db, "posts", id)); };
-window.banUser = (id) => { if(confirm("БАН?")) updateDoc(doc(db, "users", id), { banned: true }); };
+window.addComment = async (postId) => {
+    const input = document.getElementById(`cmnt-in-${postId}`);
+    if (!input.value.trim()) return;
+    await updateDoc(doc(db, "posts", postId), {
+        comments: arrayUnion({
+            uid: auth.currentUser.uid,
+            name: auth.currentUser.displayName,
+            text: input.value,
+            at: Date.now()
+        })
+    });
+    input.value = '';
+};
 
-function loadFeed() {
-    onSnapshot(query(collection(db, "posts"), orderBy("createdAt", "desc")), (snap) => {
+// --- АДМІН ФУНКЦІЇ ---
+window.banUser = (id) => { if(confirm("ЗАТИРАЄМО?")) updateDoc(doc(db, "users", id), { banned: true }); };
+window.unbanUser = (id) => { if(confirm("ПРОБАЧАЄМО?")) updateDoc(doc(db, "users", id), { banned: false }); };
+window.deletePost = (id) => { if(confirm("ВИДАЛИТИ?")) deleteDoc(doc(db, "posts", id)); };
+
+// --- ЗАВАНТАЖЕННЯ ДАНИХ ---
+function loadFeed(filter = "") {
+    const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snap) => {
         const cont = document.getElementById('feed-container');
         cont.innerHTML = '';
-        snap.docChanges().forEach(change => {
-            if (change.type === "added") {
-                const p = change.doc.data();
-                sendPush(`Новий пост від ${p.name}`, p.text);
-            }
-        });
         snap.forEach(d => {
             const p = d.data();
+            if (filter && !p.text.toLowerCase().includes(filter.toLowerCase())) return;
+            
             const isAdmin = auth.currentUser?.uid === ADMIN_UID;
+            const liked = p.likes?.includes(auth.currentUser.uid);
+            const commentsHtml = (p.comments || []).map(c => `<div style="font-size:13px; margin:3px 0;"><b>${c.name}:</b> ${c.text}</div>`).join('');
+
             cont.innerHTML += `
                 <div class="post-card">
-                    <div style="display:flex; justify-content:space-between">
-                        <b>${p.name}</b>
-                        ${isAdmin ? `<i class="fas fa-trash" style="color:var(--danger)" onclick="deletePost('${d.id}')"></i>` : ''}
+                    <div class="post-header">
+                        <img src="${p.authorAv || 'https://ui-avatars.com/api/?name='+p.name}" class="post-author-av">
+                        <div style="flex-grow:1"><b>${p.name}</b></div>
+                        ${isAdmin ? `<i class="fas fa-trash-alt" style="color:var(--danger); cursor:pointer" onclick="deletePost('${d.id}')"></i>` : ''}
                     </div>
-                    <p style="white-space:pre-wrap">${p.text}</p>
-                    ${getVideo(p.text || '')}
+                    <div style="white-space:pre-wrap">${p.text}</div>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
+                    <div class="post-actions">
+                        <div class="action-btn ${liked ? 'active' : ''}" onclick="toggleLike('${d.id}', ${liked})">
+                            <i class="fa${liked ? 's' : 'r'} fa-heart"></i> ${p.likes?.length || 0}
+                        </div>
+                        <div class="action-btn"><i class="far fa-comment"></i> ${p.comments?.length || 0}</div>
+                    </div>
+                    <div class="comment-section">
+                        ${commentsHtml}
+                        <input type="text" id="cmnt-in-${d.id}" class="comment-input" placeholder="Коментувати..." onkeydown="if(event.key==='Enter') addComment('${d.id}')">
+                    </div>
                 </div>`;
         });
         isInitialLoad = false;
     });
 }
 
-function loadUsers() {
+function loadBanned() {
     onSnapshot(collection(db, "users"), (snap) => {
-        const cont = document.getElementById('all-users-container');
+        const cont = document.getElementById('banned-users-list');
         cont.innerHTML = '';
         snap.forEach(d => {
             const u = d.data();
-            if(d.id === auth.currentUser?.uid) return;
-            cont.innerHTML += `<div class="post-card" style="display:flex; justify-content:space-between; align-items:center">
-                <span>${u.displayName} ${u.banned ? '🔴' : '🟢'}</span>
-                ${auth.currentUser?.uid === ADMIN_UID && !u.banned ? `<button class="tg-btn-small" style="background:red" onclick="banUser('${d.id}')">БАН</button>` : ''}
-            </div>`;
+            if(u.banned) {
+                cont.innerHTML += `<div class="post-card" style="display:flex; justify-content:space-between">
+                    <span>${u.displayName}</span>
+                    <button class="tg-btn-small" onclick="unbanUser('${d.id}')">РОЗБАН</button>
+                </div>`;
+            }
         });
     });
 }
 
+// --- СИСТЕМНІ ПОДІЇ ---
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('burger-btn').onclick = () => {
         document.getElementById('sidebar').classList.add('active');
@@ -102,36 +121,44 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('menu-overlay').classList.remove('active');
     };
+    document.getElementById('search-input').oninput = (e) => loadFeed(e.target.value);
+
     document.getElementById('btn-publish').onclick = async () => {
-        const btn = document.getElementById('btn-publish');
         const txt = document.getElementById('post-text').value;
         const file = document.getElementById('post-file-input').files[0];
         if(!txt.trim() && !file) return;
-        btn.disabled = true;
         const img = file ? await compress(file) : null;
-        await addDoc(collection(db, "posts"), { text: txt, image: img, name: auth.currentUser.displayName, createdAt: serverTimestamp() });
+        await addDoc(collection(db, "posts"), {
+            text: txt, image: img, uid: auth.currentUser.uid, name: auth.currentUser.displayName,
+            authorAv: auth.currentUser.photoURL, createdAt: serverTimestamp(), likes: [], comments: []
+        });
         document.getElementById('post-text').value = "";
-        btn.disabled = false;
     };
+
     document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 });
 
-onAuthStateChanged(auth, async (u) => {
-    if (u) {
-        const d = await getDoc(doc(db, "users", u.uid));
-        if (d.exists() && d.data().banned) {
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const uDoc = await getDoc(doc(db, "users", user.uid));
+        if (uDoc.exists() && uDoc.data().banned) {
             document.getElementById('ban-screen').classList.remove('hidden');
             return;
         }
-        if (!d.exists()) await setDoc(doc(db, "users", u.uid), { displayName: u.displayName, banned: false });
+        if (!uDoc.exists()) await setDoc(doc(db, "users", user.uid), { displayName: user.displayName, banned: false });
+        
         document.getElementById('auth-container').classList.add('hidden');
         document.getElementById('app-container').classList.remove('hidden');
-        const av = d.data()?.customAvatar || u.photoURL;
-        document.getElementById('menu-avatar').src = av;
-        document.getElementById('profile-avatar-big').src = av;
-        document.getElementById('menu-username').innerText = u.displayName;
-        document.getElementById('profile-name-big').innerText = u.displayName;
+        document.getElementById('menu-avatar').src = user.photoURL;
+        document.getElementById('profile-avatar-big').src = user.photoURL;
+        document.getElementById('menu-username').innerText = user.displayName;
+        document.getElementById('profile-name-big').innerText = user.displayName;
+        
+        if(user.uid === ADMIN_UID) {
+            document.getElementById('admin-link').style.display = 'flex';
+            loadBanned();
+        }
         Notification.requestPermission();
         loadFeed();
     } else {
@@ -139,3 +166,10 @@ onAuthStateChanged(auth, async (u) => {
         document.getElementById('app-container').classList.add('hidden');
     }
 });
+
+window.showPage = (id) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`page-${id}`).classList.remove('hidden');
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('menu-overlay').classList.remove('active');
+};
