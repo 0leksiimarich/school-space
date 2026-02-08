@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Chat</title>
+    <title>SchoolSpace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,38 +11,69 @@
 
     <div id="auth-container" class="auth-overlay">
         <div class="login-box">
-            <div class="tg-logo-big"><i class="fas fa-paper-plane"></i></div>
-            <h2>Telegram</h2>
-            <p>Увійдіть для початку спілкування</p>
-            <button id="btn-google" class="tg-login-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
+            <h1 style="color: var(--tg-accent);">SchoolSpace</h1>
+            <p>Увійдіть через Google</p>
+            <button id="btn-google" class="tg-btn">Увійти</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
+        
+        <div class="menu-overlay" id="menu-overlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img id="menu-avatar" src="" alt="" class="menu-avatar">
+                <span id="menu-username">Користувач</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-newspaper"></i> Стрічка новин</a>
+                <a href="#" class="nav-link" data-target="chat"><i class="fas fa-comments"></i> Повідомлення</a>
+                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Профіль</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout-menu"><i class="fas fa-sign-out-alt"></i> Вийти</button>
+            </div>
+        </aside>
+
         <header class="tg-header">
-            <div class="header-left">
-                <i class="fas fa-bars menu-icon"></i>
-                <span class="chat-title">SchoolSpace Chat</span>
-            </div>
-            <div class="header-right">
-                <i class="fas fa-search menu-icon"></i>
-                <button id="btn-logout" class="logout-btn" title="Вийти"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
+            <i class="fas fa-bars header-icon" id="burger-btn"></i>
+            <span class="header-title" id="page-title">Стрічка</span>
         </header>
 
-        <main class="chat-viewport">
-            <div id="chat-messages" class="messages-container">
+        <main class="main-content">
+            
+            <section id="page-feed" class="page">
+                <div class="create-post-box">
+                    <textarea id="post-text" placeholder="Що нового?"></textarea>
+                    <div class="post-actions">
+                        <label for="post-file-input" class="file-btn"><i class="fas fa-camera"></i> Фото</label>
+                        <input type="file" id="post-file-input" accept="image/*" hidden>
+                        <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
+                    </div>
                 </div>
-        </main>
+                <div id="feed-container">
+                    </div>
+            </section>
 
-        <footer class="chat-input-bar">
-            <i class="far fa-smile input-icon"></i>
-            <input type="text" id="msg-input" placeholder="Написати повідомлення..." autocomplete="off">
-            <i class="fas fa-paperclip input-icon attach-icon"></i>
-            <button id="btn-send-msg" class="send-btn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </footer>
+            <section id="page-chat" class="page hidden">
+                <div class="chat-container">
+                    <div id="chat-messages" class="messages-area"></div>
+                    <div class="chat-input-bar">
+                        <input type="text" id="msg-input" placeholder="Повідомлення...">
+                        <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page hidden">
+                <div class="profile-card">
+                    <img id="profile-avatar-big" src="" alt="">
+                    <h2 id="profile-name-big"></h2>
+                    <p style="color: #aaa;">Учасник SchoolSpace</p>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script type="module" src="app.js"></script>
