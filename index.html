@@ -11,9 +11,9 @@
 
     <div id="auth-container" class="auth-overlay">
         <div class="login-box">
-            <h1 style="color: var(--tg-accent);">SchoolSpace</h1>
-            <p>Увійдіть через Google</p>
-            <button id="btn-google" class="tg-btn">Увійти</button>
+            <h1 style="color: #40a7e3; margin-bottom: 10px;">SchoolSpace</h1>
+            <p style="color: #8ba0b3;">Вітаємо! Увійдіть, щоб продовжити</p>
+            <button id="btn-google" class="tg-btn">УВІЙТИ ЧЕРЕЗ GOOGLE</button>
         </div>
     </div>
 
@@ -24,42 +24,47 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img id="menu-avatar" src="" alt="" class="menu-avatar">
-                <span id="menu-username">Користувач</span>
+                <div class="user-info">
+                    <div id="menu-username" class="username">Завантаження...</div>
+                    <div class="status">online</div>
+                </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-newspaper"></i> Стрічка новин</a>
+                <a href="#" class="nav-link active" data-target="feed"><i class="fas fa-newspaper"></i> Стрічка</a>
                 <a href="#" class="nav-link" data-target="chat"><i class="fas fa-comments"></i> Повідомлення</a>
-                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Профіль</a>
+                <a href="#" class="nav-link" data-target="profile"><i class="fas fa-user"></i> Мій профіль</a>
             </nav>
             <div class="sidebar-footer">
-                <button id="btn-logout-menu"><i class="fas fa-sign-out-alt"></i> Вийти</button>
+                <button id="btn-logout-menu"><i class="fas fa-sign-out-alt"></i> Вийти з акаунту</button>
             </div>
         </aside>
 
         <header class="tg-header">
-            <i class="fas fa-bars header-icon" id="burger-btn"></i>
-            <span class="header-title" id="page-title">Стрічка</span>
+            <div class="header-left">
+                <i class="fas fa-bars header-icon" id="burger-btn"></i>
+                <span class="header-title" id="page-title">Стрічка</span>
+            </div>
         </header>
 
         <main class="main-content">
             
             <section id="page-feed" class="page">
                 <div class="create-post-box">
-                    <textarea id="post-text" placeholder="Що нового?"></textarea>
+                    <textarea id="post-text" placeholder="Що у вас нового?"></textarea>
                     <div class="post-actions">
-                        <label for="post-file-input" class="file-btn"><i class="fas fa-camera"></i> Фото</label>
+                        <label for="post-file-input" class="file-btn"><i class="fas fa-image"></i> Додати фото</label>
                         <input type="file" id="post-file-input" accept="image/*" hidden>
                         <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
                     </div>
                 </div>
-                <div id="feed-container">
-                    </div>
+                <div id="feed-container"></div>
             </section>
 
             <section id="page-chat" class="page hidden">
                 <div class="chat-container">
                     <div id="chat-messages" class="messages-area"></div>
                     <div class="chat-input-bar">
+                        <i class="far fa-smile icon-gray"></i>
                         <input type="text" id="msg-input" placeholder="Повідомлення...">
                         <button id="btn-send-msg"><i class="fas fa-paper-plane"></i></button>
                     </div>
@@ -70,7 +75,7 @@
                 <div class="profile-card">
                     <img id="profile-avatar-big" src="" alt="">
                     <h2 id="profile-name-big"></h2>
-                    <p style="color: #aaa;">Учасник SchoolSpace</p>
+                    <p style="color: #8ba0b3;">Студент SchoolSpace</p>
                 </div>
             </section>
         </main>
