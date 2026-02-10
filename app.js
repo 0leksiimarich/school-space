@@ -3,9 +3,8 @@ import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstati
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, setDoc, getDoc, deleteDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; 
-let isInitialLoad = true;
 
-// --- СИНХРОНІЗАЦІЯ ПРОФІЛЮ (ФІКС БАГУ) ---
+// --- ФІКС БАГУ З АКАУНТАМИ ---
 async function syncProfile(user) {
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
@@ -19,15 +18,33 @@ async function syncProfile(user) {
     }
 }
 
+// --- СТИСНЕННЯ ФОТО ---
+async function compress(file) {
+    return new Promise(res => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = e => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 600; canvas.height = img.height * (600 / img.width);
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                res(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+    });
+}
+
 // --- ЛОГІКА ЧАТУ ---
 function loadChat() {
-    const q = query(collection(db, "chat"), orderBy("at", "asc"), limit(100));
+    const q = query(collection(db, "chat"), orderBy("at", "asc"), limit(50));
     onSnapshot(q, (snap) => {
         const cont = document.getElementById('chat-messages');
         cont.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
-            const isMe = m.uid === auth.currentUser.uid;
+            const isMe = m.uid === auth.currentUser?.uid;
             cont.innerHTML += `
                 <div class="msg ${isMe ? 'me' : 'other'}">
                     <div class="msg-info">${m.name}</div>
@@ -50,7 +67,7 @@ async function sendChat() {
     input.value = '';
 }
 
-// --- ПОСТИ, ЛАЙКИ, КОМЕНТАРІ ---
+// --- ЛОГІКА ПОСТІВ ---
 window.toggleLike = async (id, liked) => {
     await updateDoc(doc(db, "posts", id), {
         likes: liked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
@@ -59,9 +76,9 @@ window.toggleLike = async (id, liked) => {
 
 window.addComment = async (id) => {
     const input = document.getElementById(`in-${id}`);
-    if (!input.value.trim()) return;
-    const text = input.value;
-    input.value = ''; 
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = ''; // Миттєво очищуємо
     await updateDoc(doc(db, "posts", id), {
         comments: arrayUnion({
             name: auth.currentUser.displayName,
@@ -97,16 +114,14 @@ function loadFeed(search = "") {
                         </div>
                         <div class="action-btn"><i class="far fa-comment"></i> ${p.comments?.length || 0}</div>
                     </div>
-                    <div class="comment-box">
-                        ${cmnts}
-                        <input type="text" id="in-${d.id}" class="comment-input" placeholder="Написати коментар..." onkeydown="if(event.key==='Enter') addComment('${d.id}')">
-                    </div>
+                    <div class="comment-box">${cmnts}</div>
+                    <input type="text" id="in-${d.id}" class="comment-input" placeholder="Коментувати..." onkeydown="if(event.key==='Enter') addComment('${d.id}')">
                 </div>`;
         });
     });
 }
 
-// --- АВТОРИЗАЦІЯ ТА СИСТЕМА ---
+// --- СИСТЕМНІ ФУНКЦІЇ ---
 onAuthStateChanged(auth, async (u) => {
     if (u) {
         await syncProfile(u);
@@ -123,7 +138,6 @@ onAuthStateChanged(auth, async (u) => {
         document.getElementById('profile-name-big').innerText = u.displayName;
 
         if (u.uid === ADMIN_UID) document.getElementById('admin-link').style.display = 'flex';
-        
         loadFeed();
         loadChat();
     } else {
@@ -132,33 +146,36 @@ onAuthStateChanged(auth, async (u) => {
     }
 });
 
-// Обробники подій
 document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
 document.getElementById('btn-logout').onclick = () => signOut(auth);
 document.getElementById('btn-send-chat').onclick = sendChat;
-document.getElementById('chat-input').onkeydown = (e) => { if(e.key === 'Enter') sendChat(); };
 document.getElementById('search-input').oninput = (e) => loadFeed(e.target.value);
 
+// ФІКС БАГУ З ФОТО: Очищення полів після публікації
 document.getElementById('btn-publish').onclick = async () => {
-    const txt = document.getElementById('post-text').value;
-    const file = document.getElementById('post-file-input').files[0];
-    if (!txt.trim() && !file) return;
+    const tInput = document.getElementById('post-text');
+    const fInput = document.getElementById('post-file-input');
+    const btn = document.getElementById('btn-publish');
+
+    if (!tInput.value.trim() && !fInput.files[0]) return;
     
-    let imgData = null;
-    if (file) {
-        const reader = new FileReader();
-        imgData = await new Promise(r => {
-            reader.onload = e => r(e.target.result);
-            reader.readAsDataURL(file);
-        });
-    }
+    btn.disabled = true;
+    let img = fInput.files[0] ? await compress(fInput.files[0]) : null;
 
     await addDoc(collection(db, "posts"), {
-        text: txt, image: imgData, name: auth.currentUser.displayName,
-        uid: auth.currentUser.uid, authorAv: auth.currentUser.photoURL,
-        createdAt: serverTimestamp(), likes: [], comments: []
+        text: tInput.value,
+        image: img,
+        name: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
+        authorAv: auth.currentUser.photoURL,
+        createdAt: serverTimestamp(),
+        likes: [],
+        comments: []
     });
-    document.getElementById('post-text').value = '';
+
+    tInput.value = '';   // Очистили текст
+    fInput.value = '';   // Очистили файл (БАГ ВИПРАВЛЕНО)
+    btn.disabled = false;
 };
 
 window.showPage = (id) => {
