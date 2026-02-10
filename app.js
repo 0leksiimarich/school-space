@@ -4,17 +4,25 @@ import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, u
 
 const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2"; 
 
-// --- ФІКС БАГУ З АКАУНТАМИ ---
+// --- ФУНКЦІЇ ВИДАЛЕННЯ ---
+window.deletePost = async (id) => {
+    if(confirm("Видалити пост?")) await deleteDoc(doc(db, "posts", id));
+};
+
+window.deleteChatMsg = async (id) => {
+    if(confirm("Видалити повідомлення?")) await deleteDoc(doc(db, "chat", id));
+};
+
+window.unbanUser = async (id) => {
+    if(confirm("Розбанити?")) await updateDoc(doc(db, "users", id), { banned: false });
+};
+
+// --- СИНХРОНІЗАЦІЯ ПРОФІЛЮ ---
 async function syncProfile(user) {
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
     if (!snap.exists()) {
-        await setDoc(userRef, {
-            uid: user.uid,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            banned: false
-        });
+        await setDoc(userRef, { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL, banned: false });
     }
 }
 
@@ -36,17 +44,18 @@ async function compress(file) {
     });
 }
 
-// --- ЛОГІКА ЧАТУ ---
+// --- ЧАТ ---
 function loadChat() {
-    const q = query(collection(db, "chat"), orderBy("at", "asc"), limit(50));
+    const q = query(collection(db, "chat"), orderBy("at", "asc"), limit(60));
     onSnapshot(q, (snap) => {
         const cont = document.getElementById('chat-messages');
         cont.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
             const isMe = m.uid === auth.currentUser?.uid;
+            const isAdmin = auth.currentUser?.uid === ADMIN_UID;
             cont.innerHTML += `
-                <div class="msg ${isMe ? 'me' : 'other'}">
+                <div class="msg ${isMe ? 'me' : 'other'}" ${isAdmin ? `onclick="deleteChatMsg('${d.id}')"` : ''}>
                     <div class="msg-info">${m.name}</div>
                     <div>${m.text}</div>
                 </div>`;
@@ -59,15 +68,13 @@ async function sendChat() {
     const input = document.getElementById('chat-input');
     if (!input.value.trim()) return;
     await addDoc(collection(db, "chat"), {
-        uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName,
-        text: input.value,
-        at: serverTimestamp()
+        uid: auth.currentUser.uid, name: auth.currentUser.displayName,
+        text: input.value, at: serverTimestamp()
     });
     input.value = '';
 }
 
-// --- ЛОГІКА ПОСТІВ ---
+// --- СТРІЧКА ТА КОМЕНТАРІ ---
 window.toggleLike = async (id, liked) => {
     await updateDoc(doc(db, "posts", id), {
         likes: liked ? arrayRemove(auth.currentUser.uid) : arrayUnion(auth.currentUser.uid)
@@ -76,15 +83,11 @@ window.toggleLike = async (id, liked) => {
 
 window.addComment = async (id) => {
     const input = document.getElementById(`in-${id}`);
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = ''; // Миттєво очищуємо
+    const val = input.value.trim();
+    if (!val) return;
+    input.value = '';
     await updateDoc(doc(db, "posts", id), {
-        comments: arrayUnion({
-            name: auth.currentUser.displayName,
-            text: text,
-            at: Date.now()
-        })
+        comments: arrayUnion({ name: auth.currentUser.displayName, text: val, at: Date.now() })
     });
 };
 
@@ -98,13 +101,15 @@ function loadFeed(search = "") {
             if (search && !p.text.toLowerCase().includes(search.toLowerCase())) return;
 
             const isLiked = p.likes?.includes(auth.currentUser.uid);
-            const cmnts = (p.comments || []).map(c => `<div class="comment-item"><b>${c.name}:</b> ${c.text}</div>`).join('');
+            const isAdmin = auth.currentUser?.uid === ADMIN_UID;
+            const cmnts = (p.comments || []).map(c => `<div><b>${c.name}:</b> ${c.text}</div>`).join('');
 
             cont.innerHTML += `
                 <div class="post-card">
                     <div class="post-header">
                         <img src="${p.authorAv || 'https://ui-avatars.com/api/?name='+p.name}" class="post-author-av">
-                        <b>${p.name}</b>
+                        <div style="flex-grow:1"><b>${p.name}</b></div>
+                        ${isAdmin ? `<i class="fas fa-trash-alt delete-btn" onclick="deletePost('${d.id}')"></i>` : ''}
                     </div>
                     <div style="white-space:pre-wrap">${p.text}</div>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
@@ -121,7 +126,7 @@ function loadFeed(search = "") {
     });
 }
 
-// --- СИСТЕМНІ ФУНКЦІЇ ---
+// --- СИСТЕМА ---
 onAuthStateChanged(auth, async (u) => {
     if (u) {
         await syncProfile(u);
@@ -137,9 +142,17 @@ onAuthStateChanged(auth, async (u) => {
         document.getElementById('profile-avatar-big').src = u.photoURL;
         document.getElementById('profile-name-big').innerText = u.displayName;
 
-        if (u.uid === ADMIN_UID) document.getElementById('admin-link').style.display = 'flex';
-        loadFeed();
-        loadChat();
+        if (u.uid === ADMIN_UID) {
+            document.getElementById('admin-link').style.display = 'flex';
+            onSnapshot(collection(db, "users"), s => {
+                const bList = document.getElementById('banned-list');
+                bList.innerHTML = '';
+                s.forEach(userDoc => {
+                    if(userDoc.data().banned) bList.innerHTML += `<div class="post-card" style="display:flex; justify-content:space-between"><span>${userDoc.data().displayName}</span><button class="tg-btn-small" onclick="unbanUser('${userDoc.id}')">Розбан</button></div>`;
+                });
+            });
+        }
+        loadFeed(); loadChat();
     } else {
         document.getElementById('auth-container').classList.remove('hidden');
         document.getElementById('app-container').classList.add('hidden');
@@ -149,32 +162,27 @@ onAuthStateChanged(auth, async (u) => {
 document.getElementById('btn-google').onclick = () => signInWithPopup(auth, googleProvider);
 document.getElementById('btn-logout').onclick = () => signOut(auth);
 document.getElementById('btn-send-chat').onclick = sendChat;
+document.getElementById('chat-input').onkeydown = (e) => { if(e.key==='Enter') sendChat(); };
 document.getElementById('search-input').oninput = (e) => loadFeed(e.target.value);
 
-// ФІКС БАГУ З ФОТО: Очищення полів після публікації
+// ПУБЛІКАЦІЯ З ОЧИЩЕННЯМ ФОТО
 document.getElementById('btn-publish').onclick = async () => {
-    const tInput = document.getElementById('post-text');
-    const fInput = document.getElementById('post-file-input');
+    const tIn = document.getElementById('post-text');
+    const fIn = document.getElementById('post-file-input');
     const btn = document.getElementById('btn-publish');
 
-    if (!tInput.value.trim() && !fInput.files[0]) return;
-    
+    if (!tIn.value.trim() && !fIn.files[0]) return;
     btn.disabled = true;
-    let img = fInput.files[0] ? await compress(fInput.files[0]) : null;
+    let imgData = fIn.files[0] ? await compress(fIn.files[0]) : null;
 
     await addDoc(collection(db, "posts"), {
-        text: tInput.value,
-        image: img,
-        name: auth.currentUser.displayName,
-        uid: auth.currentUser.uid,
-        authorAv: auth.currentUser.photoURL,
-        createdAt: serverTimestamp(),
-        likes: [],
-        comments: []
+        text: tIn.value, image: imgData, name: auth.currentUser.displayName,
+        uid: auth.currentUser.uid, authorAv: auth.currentUser.photoURL,
+        createdAt: serverTimestamp(), likes: [], comments: []
     });
 
-    tInput.value = '';   // Очистили текст
-    fInput.value = '';   // Очистили файл (БАГ ВИПРАВЛЕНО)
+    tIn.value = ''; 
+    fIn.value = ''; // КЛЮЧОВИЙ ФІКС БАГУ
     btn.disabled = false;
 };
 
