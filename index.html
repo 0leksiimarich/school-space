@@ -27,29 +27,29 @@
         .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
         .menu-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
         .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); }
 
-        /* Main */
+        /* Main Content */
         .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; }
         .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
         /* Posts */
-        .post-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .post-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .post-author-av { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
         .post-img { width: 100%; border-radius: 10px; margin-top: 10px; max-height: 450px; object-fit: cover; }
+        .delete-btn { color: var(--danger); cursor: pointer; opacity: 0.6; transition: 0.3s; }
+        .delete-btn:hover { opacity: 1; }
+
+        /* Actions & Comments */
         .post-actions { display: flex; gap: 20px; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
         .action-btn { cursor: pointer; color: var(--text-sec); font-size: 14px; display: flex; align-items: center; gap: 5px; }
         .action-btn.active { color: var(--danger); }
-
-        /* Comments */
-        .comment-box { margin-top: 10px; background: rgba(0,0,0,0.15); border-radius: 8px; padding: 8px; max-height: 200px; overflow-y: auto; }
-        .comment-item { font-size: 13px; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .comment-box { margin-top: 10px; background: rgba(0,0,0,0.15); border-radius: 8px; padding: 8px; font-size: 13px; }
         .comment-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 15px; padding: 5px 12px; margin-top: 5px; outline: none; }
 
         /* Chat */
-        #chat-messages { height: 65vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg); border-radius: 10px; }
-        .msg { padding: 8px 12px; border-radius: 15px; max-width: 80%; font-size: 14px; }
+        #chat-messages { height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 10px; background: var(--bg); border-radius: 10px; }
+        .msg { padding: 8px 12px; border-radius: 15px; max-width: 80%; font-size: 14px; cursor: pointer; }
         .msg.me { align-self: flex-end; background: var(--chat-me); border-bottom-right-radius: 2px; }
         .msg.other { align-self: flex-start; background: var(--chat-other); border-bottom-left-radius: 2px; }
         .msg-info { font-size: 10px; opacity: 0.6; }
@@ -63,9 +63,9 @@
 <body>
 
     <div id="ban-screen" class="ban-overlay hidden">
-        <i class="fas fa-user-slash" style="font-size: 50px; color: red;"></i>
+        <i class="fas fa-user-slash" style="font-size: 50px; color: red; margin-bottom: 20px;"></i>
         <h1>ВИ ЗАБАНЕНІ</h1>
-        <p>Доступ до SchoolSpace обмежено.</p>
+        <p>Ваш доступ до SchoolSpace обмежений.</p>
     </div>
 
     <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
@@ -77,6 +77,7 @@
 
     <div id="app-container" class="hidden">
         <div id="menu-overlay" class="menu-overlay"></div>
+        
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <img id="menu-avatar" src="" class="menu-avatar">
@@ -84,7 +85,7 @@
             </div>
             <nav>
                 <div class="nav-link" onclick="showPage('feed')"><i class="fas fa-home"></i> Стрічка</div>
-                <div class="nav-link" onclick="showPage('chat')"><i class="fas fa-comments"></i> Чат</div>
+                <div class="nav-link" onclick="showPage('chat')"><i class="fas fa-comments"></i> Загальний чат</div>
                 <div class="nav-link" onclick="showPage('contacts')"><i class="fas fa-users"></i> Учасники</div>
                 <div class="nav-link" onclick="showPage('profile')"><i class="fas fa-user-circle"></i> Профіль</div>
                 <div class="nav-link" id="admin-link" onclick="showPage('admin')" style="display:none; color: #ffcc00;"><i class="fas fa-shield-alt"></i> Адмін-панель</div>
@@ -95,13 +96,13 @@
         <header class="tg-header">
             <i class="fas fa-bars" id="burger-btn" style="cursor:pointer;"></i>
             <img src="https://raw.githubusercontent.com/YourLogin/YourRepo/main/logo.png" class="header-logo" onerror="this.style.display='none'">
-            <input type="text" id="search-input" class="search-box" placeholder="Пошук у стрічці...">
+            <input type="text" id="search-input" class="search-box" placeholder="Пошук постів...">
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="post-card">
-                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:50px;"></textarea>
+                    <textarea id="post-text" placeholder="Що цікавого?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:40px;"></textarea>
                     <div style="display:flex; justify-content:space-between; margin-top:10px;">
                         <input type="file" id="post-file-input" accept="image/*" hidden>
                         <button onclick="document.getElementById('post-file-input').click()" class="tg-btn-small" style="background:var(--border)"><i class="fas fa-image"></i></button>
@@ -114,25 +115,25 @@
             <section id="page-chat" class="page hidden">
                 <div id="chat-messages"></div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="text" id="chat-input" class="search-box" placeholder="Напишіть повідомлення...">
+                    <input type="text" id="chat-input" class="search-box" placeholder="Повідомлення...">
                     <button id="btn-send-chat" class="tg-btn-small"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </section>
 
             <section id="page-admin" class="page hidden">
-                <h3>Заблоковані</h3>
+                <h3>Керування банами</h3>
                 <div id="banned-list"></div>
             </section>
 
             <section id="page-profile" class="page hidden">
                 <div style="text-align:center; padding:20px;">
-                    <img id="profile-avatar-big" style="width:120px; height:120px; border-radius:50%; border:2px solid var(--accent)">
+                    <img id="profile-avatar-big" style="width:100px; height:100px; border-radius:50%; border:2px solid var(--accent); object-fit:cover;">
                     <h2 id="profile-name-big"></h2>
                 </div>
             </section>
 
             <section id="page-contacts" class="page hidden">
-                <h3>Усі користувачі</h3>
+                <h3>Учасники</h3>
                 <div id="users-list"></div>
             </section>
         </main>
