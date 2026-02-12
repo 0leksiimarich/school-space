@@ -23,30 +23,32 @@
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 1000; transition: 0.3s; border-right: 1px solid var(--border); }
         .sidebar.active { left: 0; }
         .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
-        .menu-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; }
+        .menu-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; cursor: pointer; }
+        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; transition: 0.2s; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); }
 
-        /* Content */
+        /* Content Area */
         .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; }
         .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
 
-        /* Post & Comments */
+        /* Cards & Posts */
         .post-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
         .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .post-author-av { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .post-content { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: 10px 0; }
+        .post-content { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin: 10px 0; line-height: 1.4; }
         .post-img { width: 100%; border-radius: 10px; margin-top: 10px; max-height: 450px; object-fit: cover; }
         
-        .comment-item { font-size: 13px; margin-bottom: 5px; word-wrap: break-word; padding: 4px 8px; background: rgba(0,0,0,0.1); border-radius: 6px; }
-        .comment-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 15px; padding: 6px 12px; margin-top: 8px; outline: none; }
+        /* Comments */
+        .comment-item { font-size: 13px; margin-bottom: 5px; padding: 6px 10px; background: rgba(255,255,255,0.03); border-radius: 8px; word-wrap: break-word; }
+        .comment-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: white; border-radius: 15px; padding: 8px 12px; margin-top: 8px; outline: none; }
 
-        /* Profile Special */
-        .profile-box { text-align: center; padding: 30px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; }
-        .avatar-edit { position: relative; display: inline-block; cursor: pointer; }
-        .avatar-edit:hover .camera-icon { opacity: 1; }
-        .camera-icon { position: absolute; inset: 0; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; color: white; }
+        /* Profile & Help Boxes */
+        .profile-box, .help-box { text-align: center; padding: 30px 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .avatar-edit-wrapper { position: relative; display: inline-block; cursor: pointer; }
+        .camera-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; color: white; }
+        .avatar-edit-wrapper:hover .camera-overlay { opacity: 1; }
 
-        .tg-btn-small { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .tg-btn-small { background: var(--accent); border: none; color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: none; }
         .menu-overlay.active { display: block; }
     </style>
@@ -54,38 +56,40 @@
 <body>
 
     <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
-        <div style="background:var(--panel); padding:40px; border-radius:20px; text-align:center; border: 1px solid var(--border);">
-            <h1 style="color:var(--accent)">SchoolSpace</h1>
-            <button id="btn-google" class="tg-btn-small">Увійти з Google</button>
+        <div style="background:var(--panel); padding:40px; border-radius:24px; text-align:center; border: 1px solid var(--border); width: 90%; max-width: 320px;">
+            <h1 style="color:var(--accent); margin-bottom: 20px;">SchoolSpace</h1>
+            <button id="btn-google" class="tg-btn-small" style="width: 100%;">Увійти з Google</button>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
         <div id="menu-overlay" class="menu-overlay"></div>
+        
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
-                <img id="menu-avatar" src="" class="menu-avatar">
-                <div id="menu-username" style="font-weight:bold; margin-top:10px;">User</div>
+                <img id="menu-avatar" src="" class="menu-avatar" onclick="showPage('profile')">
+                <div id="menu-username" style="font-weight:bold; margin-top:10px;">Користувач</div>
             </div>
             <nav>
                 <div class="nav-link" onclick="showPage('feed')"><i class="fas fa-home"></i> Стрічка</div>
                 <div class="nav-link" onclick="showPage('chat')"><i class="fas fa-comments"></i> Чат</div>
                 <div class="nav-link" onclick="showPage('contacts')"><i class="fas fa-users"></i> Учасники</div>
                 <div class="nav-link" onclick="showPage('profile')"><i class="fas fa-user-circle"></i> Профіль</div>
+                <div class="nav-link" onclick="showPage('help')" style="color: var(--accent);"><i class="fas fa-question-circle"></i> Допомога</div>
                 <div class="nav-link" id="btn-logout" style="color:var(--danger); margin-top:20px;"><i class="fas fa-sign-out-alt"></i> Вихід</div>
             </nav>
         </aside>
 
         <header class="tg-header">
-            <i class="fas fa-bars" id="burger-btn" style="cursor:pointer;"></i>
+            <i class="fas fa-bars" id="burger-btn" style="cursor:pointer; font-size: 20px;"></i>
             <input type="text" id="search-input" class="search-box" placeholder="Пошук...">
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="post-card">
-                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:50px;"></textarea>
-                    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:60px; font-size: 15px;"></textarea>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px; align-items: center;">
                         <input type="file" id="post-file-input" accept="image/*" hidden>
                         <button onclick="document.getElementById('post-file-input').click()" class="tg-btn-small" style="background:var(--border)"><i class="fas fa-image"></i></button>
                         <button id="btn-publish" class="tg-btn-small">Опублікувати</button>
@@ -96,28 +100,30 @@
 
             <section id="page-profile" class="page hidden">
                 <div class="profile-box">
-                    <div class="avatar-edit" onclick="document.getElementById('av-change-input').click()">
-                        <img id="profile-avatar-big" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid var(--accent);">
-                        <div class="camera-icon"><i class="fas fa-camera"></i></div>
+                    <div class="avatar-edit-wrapper" onclick="document.getElementById('av-upload').click()">
+                        <img id="profile-avatar-big" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--accent);">
+                        <div class="camera-overlay"><i class="fas fa-camera" style="font-size: 24px;"></i></div>
                     </div>
-                    <input type="file" id="av-change-input" accept="image/*" hidden>
-                    <h2 id="profile-name-big"></h2>
+                    <input type="file" id="av-upload" accept="image/*" hidden>
+                    <h2 id="profile-name-big" style="margin-top: 15px;"></h2>
+                    <p style="color: var(--text-sec); font-size: 14px;">Ваша особиста сторінка</p>
                 </div>
-                <h3 style="margin-left:10px;">Мої пости</h3>
+                <h3 style="padding: 0 10px;">Мої публікації</h3>
                 <div id="my-posts-container"></div>
             </section>
 
-            <section id="page-chat" class="page hidden">
-                <div id="chat-messages"></div>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="text" id="chat-input" class="search-box" placeholder="Напишіть...">
-                    <button id="btn-send-chat" class="tg-btn-small"><i class="fas fa-paper-plane"></i></button>
+            <section id="page-help" class="page hidden">
+                <div class="help-box" style="text-align: left;">
+                    <h2 style="color: var(--accent);"><i class="fas fa-info-circle"></i> Центр допомоги</h2>
+                    <p><b>Зміна фото:</b> Натисніть на свою аватарку в профілі або в меню.</p>
+                    <p><b>Публікація:</b> Пишіть текст у полі на головній та додавайте фото через іконку картинки.</p>
+                    <p><b>Контакти:</b> У розділі "Учасники" ви можете побачити всіх користувачів школи.</p>
+                    <button class="tg-btn-small" style="width: 100%; margin-top: 15px;" onclick="showPage('chat')">Написати в техпідтримку (Чат)</button>
                 </div>
             </section>
-            
-            <section id="page-contacts" class="page hidden">
-                <div id="users-list"></div>
-            </section>
+
+            <section id="page-chat" class="page hidden"><div id="chat-messages" style="height: 70vh; overflow-y: auto; padding: 10px;"></div><div style="display:flex; gap:10px; margin-top:10px;"><input type="text" id="chat-input" class="search-box" placeholder="Напишіть повідомлення..."><button id="btn-send-chat" class="tg-btn-small"><i class="fas fa-paper-plane"></i></button></div></section>
+            <section id="page-contacts" class="page hidden"><div id="users-list"></div></section>
         </main>
     </div>
     <script type="module" src="app.js"></script>
