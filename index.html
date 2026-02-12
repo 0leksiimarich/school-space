@@ -3,87 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SchoolSpace Official</title>
+    <title>SchoolSpace</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root {
-            --bg: #0e1621; --panel: #17212b; --accent: #40a7e3; 
-            --text: #ffffff; --text-sec: #8ba0b3; --border: #232e3c;
-            --danger: #ff5959;
-        }
-        * { box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        :root { --bg: #0e1621; --panel: #17212b; --accent: #40a7e3; --text: #fff; --border: #232e3c; }
+        * { box-sizing: border-box; font-family: sans-serif; }
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); height: 100%; overflow: hidden; }
         .hidden { display: none !important; }
-
-        /* Header */
-        .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 100; gap: 10px; }
-        .search-box { flex-grow: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 8px 15px; color: white; outline: none; }
-
-        /* Sidebar */
+        
+        .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 100; }
         .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 1000; transition: 0.3s; border-right: 1px solid var(--border); }
         .sidebar.active { left: 0; }
-        .sidebar-header { padding: 30px 20px; background: var(--accent); color: white; }
-        .menu-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
-        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: var(--text); cursor: pointer; gap: 15px; }
-
-        /* Content */
-        .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; -webkit-overflow-scrolling: touch; }
-        .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-
-        /* Posts */
+        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: #fff; cursor: pointer; gap: 15px; text-decoration: none; }
+        
+        .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; }
+        .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 50px; }
         .post-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-author-av { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .post-content { white-space: pre-wrap; word-wrap: break-word; margin: 10px 0; }
-        .post-img { width: 100%; border-radius: 10px; margin-top: 10px; max-height: 400px; object-fit: cover; }
-
-        /* Buttons */
-        .tg-btn { background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: none; }
         .menu-overlay.active { display: block; }
-        
-        .profile-box { text-align: center; padding: 20px; background: var(--panel); border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .tg-btn { background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
-        <div style="background:var(--panel); padding:40px; border-radius:24px; text-align:center; border: 1px solid var(--border); width: 90%; max-width: 320px;">
-            <h1 style="color:var(--accent)">SchoolSpace</h1>
-            <button id="btn-google" class="tg-btn" style="width: 100%;">Увійти з Google</button>
-        </div>
+        <button id="btn-google" class="tg-btn" style="font-size: 18px;">Увійти з Google</button>
     </div>
 
     <div id="app-container" class="hidden">
-        <div id="menu-overlay" class="menu-overlay"></div>
+        <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu(false)"></div>
         
         <aside id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <img id="menu-avatar" src="" class="menu-avatar">
-                <div id="menu-username" style="font-weight:bold; margin-top:10px;">Завантаження...</div>
+            <div style="padding: 30px 20px; background: var(--accent);">
+                <img id="menu-avatar" src="" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid white;">
+                <div id="menu-username" style="font-weight:bold; margin-top:10px;">Користувач</div>
             </div>
             <nav>
-                <div class="nav-link" id="nav-feed"><i class="fas fa-home"></i> Стрічка</div>
-                <div class="nav-link" id="nav-chat"><i class="fas fa-comments"></i> Чат</div>
-                <div class="nav-link" id="nav-users"><i class="fas fa-users"></i> Учасники</div>
-                <div class="nav-link" id="nav-profile"><i class="fas fa-user-circle"></i> Профіль</div>
-                <div class="nav-link" id="nav-help" style="color: var(--accent);"><i class="fas fa-question-circle"></i> Допомога</div>
-                <div class="nav-link" id="btn-logout" style="color:var(--danger); margin-top:20px;"><i class="fas fa-sign-out-alt"></i> Вихід</div>
+                <div class="nav-link" onclick="goToPage('feed')"><i class="fas fa-home"></i> Стрічка</div>
+                <div class="nav-link" onclick="goToPage('chat')"><i class="fas fa-comments"></i> Чат</div>
+                <div class="nav-link" onclick="goToPage('profile')"><i class="fas fa-user-circle"></i> Профіль</div>
+                <div class="nav-link" onclick="goToPage('help')"><i class="fas fa-question-circle"></i> Допомога</div>
+                <div class="nav-link" id="btn-logout" style="color:#ff5959; margin-top:20px;"><i class="fas fa-sign-out-alt"></i> Вихід</div>
             </nav>
         </aside>
 
         <header class="tg-header">
-            <i class="fas fa-bars" id="burger-btn" style="cursor:pointer; font-size: 20px;"></i>
-            <div style="font-weight: bold; flex-grow: 1; text-align: center;">SchoolSpace</div>
+            <i class="fas fa-bars" onclick="toggleMenu(true)" style="cursor:pointer; font-size: 20px; margin-right: 20px;"></i>
+            <div style="font-weight:bold;">SchoolSpace</div>
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="post-card">
-                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:50px; font-size: 16px;"></textarea>
+                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; min-height:50px; font-size:16px;"></textarea>
                     <div style="display:flex; justify-content:space-between; margin-top:10px;">
                         <input type="file" id="post-file-input" accept="image/*" hidden>
-                        <button id="btn-add-img" class="tg-btn" style="background:var(--border)"><i class="fas fa-image"></i></button>
+                        <button onclick="document.getElementById('post-file-input').click()" class="tg-btn" style="background:#232e3c"><i class="fas fa-image"></i></button>
                         <button id="btn-publish" class="tg-btn">Опублікувати</button>
                     </div>
                 </div>
@@ -91,30 +66,24 @@
             </section>
 
             <section id="page-profile" class="page hidden">
-                <div class="profile-box">
-                    <div style="position: relative; display: inline-block; cursor: pointer;" id="profile-avatar-click">
-                        <img id="profile-avatar-big" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid var(--accent);">
-                        <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
-                            <i class="fas fa-camera"></i>
-                        </div>
-                    </div>
+                <div class="post-card" style="text-align:center;">
+                    <img id="profile-avatar-big" onclick="document.getElementById('av-upload').click()" style="width:120px; height:120px; border-radius:50%; border:3px solid var(--accent); cursor:pointer; object-fit:cover;">
                     <input type="file" id="av-upload" accept="image/*" hidden>
-                    <h2 id="profile-name-big" style="margin-top:10px;"></h2>
+                    <h2 id="profile-name-big"></h2>
                 </div>
                 <div id="my-posts-container"></div>
             </section>
 
             <section id="page-help" class="page hidden">
-                <div class="profile-box" style="text-align: left;">
+                <div class="post-card">
                     <h3>Допомога</h3>
-                    <p>1. Щоб змінити фото — натисніть на нього у Профілі.</p>
-                    <p>2. Пости у Профілі показують лише ваші публікації.</p>
-                    <p>3. Якщо кнопки не натискаються — оновіть сторінку.</p>
+                    <p>Натисніть на фото в профілі, щоб змінити його.</p>
                 </div>
             </section>
 
-            <section id="page-chat" class="page hidden"><div class="profile-box">Чат у розробці або підключіть старий код</div></section>
-            <section id="page-users" class="page hidden"><div id="users-list"></div></section>
+            <section id="page-chat" class="page hidden">
+                <div class="post-card">Чат тимчасово недоступний</div>
+            </section>
         </main>
     </div>
 
