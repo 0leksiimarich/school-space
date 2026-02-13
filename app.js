@@ -11,20 +11,31 @@ import {
 
 const ADMIN_UID = "v5DxqguPUjTi1vtgtzgjZyyrlUf2";
 
-// --- ФУНКЦІЇ СИСТЕМИ ---
-const toggleMenu = (o) => {
-    document.getElementById('sidebar').classList.toggle('active', o);
-    document.getElementById('menu-overlay').classList.toggle('active', o);
+// --- ГЛОБАЛЬНІ ФУНКЦІЇ (Тепер кнопки їх побачать!) ---
+
+window.toggleMenu = (open) => {
+    document.getElementById('sidebar').classList.toggle('active', open);
+    document.getElementById('menu-overlay').classList.toggle('active', open);
 };
 
-const goToPage = (id) => {
+window.goToPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    document.getElementById(`page-${id}`).classList.remove('hidden');
-    toggleMenu(false);
+    const target = document.getElementById(`page-${id}`);
+    if (target) target.classList.remove('hidden');
+    window.toggleMenu(false);
     if(id === 'profile') loadPosts('my-posts-container', auth.currentUser?.uid);
     if(id === 'search') loadUsers();
 };
 
+window.switchAuthTab = (type) => {
+    const isLogin = type === 'login';
+    document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+    document.getElementById('form-reg').classList.toggle('hidden', isLogin);
+    document.getElementById('tab-login-btn').classList.toggle('active', isLogin);
+    document.getElementById('tab-reg-btn').classList.toggle('active', !isLogin);
+};
+
+// --- СТИСКАННЯ ФОТО ---
 async function compressImage(file) {
     return new Promise((res) => {
         const reader = new FileReader();
@@ -43,41 +54,28 @@ async function compressImage(file) {
     });
 }
 
-// --- ГОЛОВНА ІНІЦІАЛІЗАЦІЯ (ЩОБ КНОПКИ ПРАЦЮВАЛИ) ---
-function setupEventListeners() {
+// --- ПРИВ'ЯЗКА ПОДІЙ ---
+document.addEventListener('DOMContentLoaded', () => {
     // Вкладки
-    document.getElementById('tab-login-btn').addEventListener('click', () => {
-        document.getElementById('form-login').classList.remove('hidden');
-        document.getElementById('form-reg').classList.add('hidden');
-        document.getElementById('tab-login-btn').classList.add('active');
-        document.getElementById('tab-reg-btn').classList.remove('active');
-    });
+    document.getElementById('tab-login-btn').onclick = () => window.switchAuthTab('login');
+    document.getElementById('tab-reg-btn').onclick = () => window.switchAuthTab('reg');
 
-    document.getElementById('tab-reg-btn').addEventListener('click', () => {
-        document.getElementById('form-login').classList.add('hidden');
-        document.getElementById('form-reg').classList.remove('hidden');
-        document.getElementById('tab-reg-btn').classList.add('active');
-        document.getElementById('tab-login-btn').classList.remove('active');
-    });
-
-    // Авторизація
-    document.getElementById('btn-do-login').addEventListener('click', async () => {
+    // Вхід
+    document.getElementById('btn-do-login').onclick = async () => {
         const email = document.getElementById('login-email').value;
         const pass = document.getElementById('login-pass').value;
         const remember = document.getElementById('remember-checkbox').checked;
-
         try {
-            // Запам'ятати мене (Local = назавжди, Session = до закриття вкладки)
             await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
             await signInWithEmailAndPassword(auth, email, pass);
         } catch (e) { alert("Помилка: " + e.message); }
-    });
+    };
 
-    document.getElementById('btn-do-reg').addEventListener('click', async () => {
+    // Реєстрація
+    document.getElementById('btn-do-reg').onclick = async () => {
         const p1 = document.getElementById('reg-pass1').value;
         const p2 = document.getElementById('reg-pass2').value;
-        if(p1 !== p2) return alert("Паролі не збігаються!");
-
+        if(p1 !== p2) return alert("Паролі Onepassword та 2Password не збігаються!");
         try {
             const cred = await createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, p1);
             await setDoc(doc(db, "users", cred.user.uid), {
@@ -90,41 +88,35 @@ function setupEventListeners() {
                 isAdmin: cred.user.uid === ADMIN_UID
             });
         } catch (e) { alert(e.message); }
-    });
+    };
 
-    document.getElementById('btn-google-login').addEventListener('click', () => signInWithPopup(auth, googleProvider));
+    // Інші кнопки
+    document.getElementById('btn-google-login').onclick = () => signInWithPopup(auth, googleProvider);
+    document.getElementById('burger-btn').onclick = () => window.toggleMenu(true);
+    document.getElementById('menu-overlay').onclick = () => window.toggleMenu(false);
+    document.getElementById('nav-feed').onclick = () => window.goToPage('feed');
+    document.getElementById('nav-search').onclick = () => window.goToPage('search');
+    document.getElementById('nav-profile').onclick = () => window.goToPage('profile');
+    document.getElementById('nav-help').onclick = () => window.goToPage('help');
+    document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => location.reload());
+    document.getElementById('btn-pick-photo').onclick = () => document.getElementById('post-file-input').click();
+    document.getElementById('btn-publish').onclick = handlePublish;
     
-    document.getElementById('btn-reset-pass').addEventListener('click', async () => {
+    document.getElementById('btn-reset-pass').onclick = async () => {
         const email = document.getElementById('login-email').value;
-        if(!email) return alert("Впишіть Email!");
+        if(!email) return alert("Введіть email!");
         await sendPasswordResetEmail(auth, email);
-        alert("Лист надіслано!");
-    });
+        alert("Лист для зміни пароля надіслано!");
+    };
+});
 
-    // Навігація
-    document.getElementById('burger-btn').addEventListener('click', () => toggleMenu(true));
-    document.getElementById('menu-overlay').addEventListener('click', () => toggleMenu(false));
-    document.getElementById('nav-feed').addEventListener('click', () => goToPage('feed'));
-    document.getElementById('nav-search').addEventListener('click', () => goToPage('search'));
-    document.getElementById('nav-profile').addEventListener('click', () => goToPage('profile'));
-    document.getElementById('nav-help').addEventListener('click', () => goToPage('help'));
-    document.getElementById('btn-logout').addEventListener('click', () => signOut(auth).then(() => location.reload()));
-
-    // Пости
-    document.getElementById('btn-pick-photo').addEventListener('click', () => document.getElementById('post-file-input').click());
-    document.getElementById('btn-publish').addEventListener('click', handlePublish);
-    document.getElementById('profile-avatar-big').addEventListener('click', () => document.getElementById('av-upload').click());
-}
-
-// --- ЛОГІКА ПУБЛІКАЦІЇ ---
+// --- ПУБЛІКАЦІЯ ---
 async function handlePublish() {
     const txt = document.getElementById('post-text');
     const file = document.getElementById('post-file-input').files[0];
     if(!txt.value.trim() && !file) return;
-
     const btn = document.getElementById('btn-publish');
-    btn.disabled = true; btn.innerText = "...";
-
+    btn.disabled = true;
     try {
         let b64 = file ? await compressImage(file) : null;
         const u = (await getDoc(doc(db, "users", auth.currentUser.uid))).data();
@@ -134,8 +126,30 @@ async function handlePublish() {
         });
         txt.value = ''; document.getElementById('post-file-input').value = '';
     } catch(e) { alert("Помилка"); }
-    finally { btn.disabled = false; btn.innerText = "Опублікувати"; }
+    finally { btn.disabled = false; }
 }
+
+// --- СТАН AUTH ---
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if(snap.exists()){
+            const d = snap.data();
+            document.getElementById('menu-avatar').src = d.photoURL;
+            document.getElementById('menu-username').innerText = d.displayName;
+            document.getElementById('profile-avatar-big').src = d.photoURL;
+            document.getElementById('profile-name-big').innerText = d.displayName;
+            document.getElementById('profile-info').innerText = `${d.school}, ${d.class} клас`;
+            if(d.isAdmin) document.getElementById('admin-tag').classList.remove('hidden');
+        }
+        document.getElementById('auth-container').classList.add('hidden');
+        document.getElementById('app-container').classList.remove('hidden');
+        loadPosts('feed-container');
+    } else {
+        document.getElementById('auth-container').classList.remove('hidden');
+        document.getElementById('app-container').classList.add('hidden');
+    }
+});
 
 // --- ЗАВАНТАЖЕННЯ ДАНИХ ---
 function loadPosts(contId, filterUid = null) {
@@ -150,11 +164,11 @@ function loadPosts(contId, filterUid = null) {
             cont.innerHTML += `
                 <div class="post-card">
                     ${isMe ? `<i class="fas fa-trash" onclick="window.delP('${s.id}')" style="position:absolute; right:15px; top:15px; color:var(--danger); cursor:pointer;"></i>` : ''}
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
                         <img src="${p.authorAv}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;">
                         <b>${p.name}</b>
                     </div>
-                    <p>${p.text}</p>
+                    <p style="margin:10px 0;">${p.text}</p>
                     ${p.image ? `<img src="${p.image}" class="post-img">` : ''}
                 </div>`;
         });
@@ -163,26 +177,17 @@ function loadPosts(contId, filterUid = null) {
 
 window.delP = async (id) => { if(confirm("Видалити?")) await deleteDoc(doc(db, "posts", id)); };
 
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if(snap.exists()){
-            const d = snap.data();
-            document.getElementById('menu-avatar').src = d.photoURL;
-            document.getElementById('profile-avatar-big').src = d.photoURL;
-            document.getElementById('menu-username').innerText = d.displayName;
-            document.getElementById('profile-name-big').innerText = d.displayName;
-            document.getElementById('profile-info').innerText = `${d.school}, ${d.class} кл.`;
-            if(d.isAdmin) document.getElementById('admin-tag').classList.remove('hidden');
-        }
-        document.getElementById('auth-container').classList.add('hidden');
-        document.getElementById('app-container').classList.remove('hidden');
-        loadPosts('feed-container');
-    } else {
-        document.getElementById('auth-container').classList.remove('hidden');
-        document.getElementById('app-container').classList.add('hidden');
-    }
-});
-
-// Запуск подій
-setupEventListeners();
+function loadUsers() {
+    onSnapshot(collection(db, "users"), (snap) => {
+        const cont = document.getElementById('search-results');
+        cont.innerHTML = '<h3>Учасники</h3>';
+        snap.forEach(u => {
+            const d = u.data();
+            cont.innerHTML += `
+                <div class="post-card" style="display:flex; align-items:center; gap:15px;">
+                    <img src="${d.photoURL}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                    <div><b>${d.displayName}</b><br><small>${d.school}</small></div>
+                </div>`;
+        });
+    });
+}
