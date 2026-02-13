@@ -11,99 +11,131 @@
         body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text); height: 100%; overflow: hidden; }
         .hidden { display: none !important; }
 
-        /* Auth */
-        .auth-card { background: var(--panel); padding: 25px; border-radius: 20px; border: 1px solid var(--border); width: 92%; max-width: 400px; }
+        /* Auth Screen */
+        .auth-card { background: var(--panel); padding: 25px; border-radius: 20px; border: 1px solid var(--border); width: 92%; max-width: 400px; z-index: 3000; }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
         .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; opacity: 0.6; }
         .auth-tab.active { opacity: 1; border-bottom: 2px solid var(--accent); color: var(--accent); }
         .auth-input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; outline: none; }
         
-        /* Main */
-        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 1000; transition: 0.3s; border-right: 1px solid var(--border); }
+        /* Layout */
+        .sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--panel); z-index: 2000; transition: 0.3s; border-right: 1px solid var(--border); }
         .sidebar.active { left: 0; }
-        .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 100; }
-        .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1500; display: none; }
+        .menu-overlay.active { display: block; }
+
+        .tg-header { height: 60px; background: var(--panel); display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); position: fixed; top: 0; width: 100%; z-index: 1000; }
+        .main-content { margin-top: 60px; height: calc(100vh - 60px); overflow-y: auto; padding: 10px; position: relative; z-index: 100; }
+
         .page { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
         .post-card { background: var(--panel); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+        
         .tg-btn { background: var(--accent); border: none; color: white; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
-        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 900; display: none; }
-        .menu-overlay.active { display: block; }
+        .nav-link { display: flex; align-items: center; padding: 15px 20px; color: #fff; cursor: pointer; gap: 15px; font-size: 16px; border-radius: 10px; margin: 5px; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); }
+
+        .remember-me { display: flex; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:2000; display:flex; align-items:center; justify-content:center;">
+    <div id="auth-container" style="position:fixed; inset:0; background:var(--bg); z-index:3000; display:flex; align-items:center; justify-content:center;">
         <div class="auth-card">
             <h2 style="text-align:center; color:var(--accent);">SchoolSpace</h2>
-            <button class="tg-btn" id="btn-google" style="background:#fff; color:#000; margin-bottom:15px;">Google</button>
+            <button class="tg-btn" id="btn-google" style="background:#fff; color:#000; margin-bottom:15px; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" width="18"> Увійти з Google
+            </button>
             
             <div class="auth-tabs">
-                <div class="auth-tab active" onclick="switchTab('login')" id="tab-login">Вхід</div>
-                <div class="auth-tab" onclick="switchTab('reg')" id="tab-reg">Реєстрація</div>
+                <div class="auth-tab active" id="tab-login" onclick="window.switchTab('login')">Вхід</div>
+                <div class="auth-tab" id="tab-reg" onclick="window.switchTab('reg')">Реєстрація</div>
             </div>
 
             <div id="form-login">
                 <input type="email" id="email-login" class="auth-input" placeholder="Пошта">
                 <input type="password" id="pass-login" class="auth-input" placeholder="Пароль">
-                <label style="font-size: 14px;"><input type="checkbox" id="remember-me" checked> Запам'ятати мене</label>
-                <button class="tg-btn" id="do-login-btn" style="margin-top:10px;">Увійти</button>
+                <label class="remember-me"><input type="checkbox" id="remember-me" checked> Запам'ятати мене</label>
+                <button class="tg-btn" id="do-login-btn">Увійти</button>
+                <p onclick="window.resetPassword()" style="text-align:center; color:var(--accent); cursor:pointer; font-size:14px; margin-top:15px;">Забули пароль?</p>
             </div>
 
             <div id="form-reg" class="hidden">
-                <input type="text" id="reg-name" class="auth-input" placeholder="Ім'я">
+                <input type="text" id="reg-name" class="auth-input" placeholder="Ім'я та Прізвище">
                 <input type="text" id="reg-city" class="auth-input" placeholder="Місто">
                 <input type="email" id="reg-email" class="auth-input" placeholder="Email">
-                <input type="password" id="reg-pass1" class="auth-input" placeholder="Onepassword">
-                <input type="password" id="reg-pass2" class="auth-input" placeholder="2Password">
-                <button class="tg-btn" id="do-reg-btn">Створити акаунт</button>
+                <input type="password" id="reg-pass1" class="auth-input" placeholder="Пароль (Onepassword)">
+                <input type="password" id="reg-pass2" class="auth-input" placeholder="Підтвердіть (2Password)">
+                <button class="tg-btn" id="do-reg-btn">Зареєструватися</button>
             </div>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
-        <div id="menu-overlay" class="menu-overlay" onclick="toggleMenu(false)"></div>
+        <div id="menu-overlay" class="menu-overlay" onclick="window.toggleMenu(false)"></div>
+        
         <aside id="sidebar" class="sidebar">
-            <div style="padding: 30px 20px; background: var(--accent);">
-                <img id="user-av" src="" style="width:60px; height:60px; border-radius:50%; background:#eee;">
-                <div id="user-name" style="font-weight:bold; margin-top:10px;"></div>
+            <div style="padding: 40px 20px; background: var(--accent);">
+                <img id="user-av" src="" style="width:70px; height:70px; border-radius:50%; background:#eee; object-fit:cover; border:2px solid #fff;">
+                <div id="user-name" style="font-weight:bold; margin-top:10px; font-size: 18px;"></div>
             </div>
-            <nav>
-                <div class="nav-link" style="padding:15px 20px; cursor:pointer;" onclick="goToPage('feed')">Стрічка</div>
-                <div class="nav-link" style="padding:15px 20px; cursor:pointer;" onclick="goToPage('profile')">Профіль</div>
-                <div id="btn-logout" style="padding:15px 20px; color:var(--danger); cursor:pointer;">Вихід</div>
+            <nav style="padding: 10px;">
+                <div class="nav-link" onclick="window.goToPage('feed')"><i class="fas fa-home"></i> Стрічка</div>
+                <div class="nav-link" onclick="window.goToPage('search')"><i class="fas fa-search"></i> Знайти</div>
+                <div class="nav-link" onclick="window.goToPage('profile')"><i class="fas fa-user"></i> Профіль</div>
+                <div class="nav-link" onclick="window.goToPage('help')"><i class="fas fa-question-circle"></i> Допомога</div>
+                <div class="nav-link" id="btn-logout" style="color:var(--danger); margin-top:20px; border-top: 1px solid var(--border);"><i class="fas fa-sign-out-alt"></i> Вихід</div>
             </nav>
         </aside>
 
         <header class="tg-header">
-            <i class="fas fa-bars" onclick="toggleMenu(true)" style="cursor:pointer; font-size: 20px;"></i>
-            <div style="flex-grow:1; text-align:center; font-weight:bold;">SchoolSpace</div>
+            <i class="fas fa-bars" onclick="window.toggleMenu(true)" style="cursor:pointer; font-size: 24px; padding: 10px;"></i>
+            <div style="flex-grow:1; text-align:center; font-weight:bold; font-size: 18px;">SchoolSpace</div>
         </header>
 
         <main class="main-content">
             <section id="page-feed" class="page">
                 <div class="post-card">
-                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none;"></textarea>
-                    <button id="btn-publish" class="tg-btn" style="width:auto; margin-top:10px;">Опублікувати</button>
+                    <textarea id="post-text" placeholder="Що нового?" style="width:100%; background:transparent; border:none; color:white; outline:none; resize:none; font-size:16px; min-height:60px;"></textarea>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px; align-items:center;">
+                        <input type="file" id="post-file" accept="image/*" hidden>
+                        <i class="fas fa-camera" onclick="document.getElementById('post-file').click()" style="cursor:pointer; font-size:22px; color:var(--accent);"></i>
+                        <button id="btn-publish" class="tg-btn" style="width:auto; padding:8px 25px;">Опублікувати</button>
+                    </div>
                 </div>
-                <div id="feed"></div>
+                <div id="feed-items"></div>
             </section>
+
             <section id="page-profile" class="page hidden">
-                <div class="post-card" id="profile-data"></div>
+                <div class="post-card" style="text-align:center;">
+                    <h3 id="prof-name">Завантаження...</h3>
+                    <p id="prof-city"></p>
+                </div>
+                <div id="user-posts"></div>
+            </section>
+
+            <section id="page-search" class="page hidden">
+                <div id="all-users"></div>
+            </section>
+
+            <section id="page-help" class="page hidden">
+                <div class="post-card">
+                    <h3>Допомога</h3>
+                    <p>Якщо кнопки не працюють, спробуйте перезавантажити сторінку.</p>
+                </div>
             </section>
         </main>
     </div>
 
     <script type="module">
-        // Імпорт Firebase безпосередньо в HTML
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "ТВІЙ_API_KEY",
-            authDomain: "ТВІЙ_ID.firebaseapp.com",
-            projectId: "ТВІЙ_ID",
-            storageBucket: "ТВІЙ_ID.appspot.com",
+            apiKey: "ВСТАВ_СВІЙ_API_KEY",
+            authDomain: "ВСТАВ_СВІЙ_ID.firebaseapp.com",
+            projectId: "ВСТАВ_СВІЙ_ID",
+            storageBucket: "ВСТАВ_СВІЙ_ID.appspot.com",
             messagingSenderId: "ID",
             appId: "APP_ID"
         };
@@ -113,23 +145,34 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // --- РОБИМО ФУНКЦІЇ ГЛОБАЛЬНИМИ ДЛЯ HTML ---
-        window.toggleMenu = (o) => {
-            document.getElementById('sidebar').classList.toggle('active', o);
-            document.getElementById('menu-overlay').classList.toggle('active', o);
+        // --- ГЛОБАЛЬНІ ФУНКЦІЇ ---
+        window.toggleMenu = (open) => {
+            document.getElementById('sidebar').classList.toggle('active', open);
+            document.getElementById('menu-overlay').classList.toggle('active', open);
         };
 
         window.goToPage = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById('page-' + id).classList.remove('hidden');
             window.toggleMenu(false);
+            if(id === 'search') loadUsers();
         };
 
         window.switchTab = (tab) => {
-            document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('form-reg').classList.toggle('hidden', tab !== 'reg');
-            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-            document.getElementById('tab-reg').classList.toggle('active', tab === 'reg');
+            const isLogin = tab === 'login';
+            document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+            document.getElementById('form-reg').classList.toggle('hidden', isLogin);
+            document.getElementById('tab-login').classList.toggle('active', isLogin);
+            document.getElementById('tab-reg').classList.toggle('active', !isLogin);
+        };
+
+        window.resetPassword = async () => {
+            const email = document.getElementById('email-login').value;
+            if(!email) return alert("Вкажіть пошту!");
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("Лист надіслано!");
+            } catch(e) { alert(e.message); }
         };
 
         // --- ЛОГІКА КНОПОК ---
@@ -140,7 +183,7 @@
             try {
                 await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
                 await signInWithEmailAndPassword(auth, email, pass);
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("Помилка: " + e.message); }
         };
 
         document.getElementById('do-reg-btn').onclick = async () => {
@@ -150,6 +193,7 @@
             try {
                 const cred = await createUserWithEmailAndPassword(auth, document.getElementById('reg-email').value, p1);
                 await setDoc(doc(db, "users", cred.user.uid), {
+                    uid: cred.user.uid,
                     displayName: document.getElementById('reg-name').value,
                     city: document.getElementById('reg-city').value,
                     photoURL: "https://cdn-icons-png.flaticon.com/512/149/149071.png"
@@ -158,28 +202,33 @@
         };
 
         document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
-        document.getElementById('btn-logout').onclick = () => signOut(auth).then(() => location.reload());
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
 
         document.getElementById('btn-publish').onclick = async () => {
             const txt = document.getElementById('post-text').value;
             if(!txt) return;
-            const user = auth.currentUser;
-            const userData = (await getDoc(doc(db, "users", user.uid))).data();
-            await addDoc(collection(db, "posts"), {
-                name: userData.displayName,
-                text: txt,
-                createdAt: serverTimestamp()
-            });
-            document.getElementById('post-text').value = '';
+            try {
+                const u = (await getDoc(doc(db, "users", auth.currentUser.uid))).data();
+                await addDoc(collection(db, "posts"), {
+                    name: u.displayName,
+                    uid: u.uid,
+                    text: txt,
+                    createdAt: serverTimestamp()
+                });
+                document.getElementById('post-text').value = '';
+            } catch(e) { alert("Помилка публікації"); }
         };
 
-        // --- СТАН AUTH ---
+        // --- AUTH ТА ДАНІ ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
-                    document.getElementById('user-name').innerText = snap.data().displayName;
-                    document.getElementById('user-av').src = snap.data().photoURL;
+                    const d = snap.data();
+                    document.getElementById('user-name').innerText = d.displayName;
+                    document.getElementById('user-av').src = d.photoURL;
+                    document.getElementById('prof-name').innerText = d.displayName;
+                    document.getElementById('prof-city').innerText = d.city;
                 }
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
@@ -193,11 +242,22 @@
         function loadPosts() {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snap) => {
-                const cont = document.getElementById('feed');
+                const cont = document.getElementById('feed-items');
                 cont.innerHTML = '';
                 snap.forEach(d => {
                     const p = d.data();
                     cont.innerHTML += `<div class="post-card"><b>${p.name}</b><p>${p.text}</p></div>`;
+                });
+            });
+        }
+
+        function loadUsers() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                const cont = document.getElementById('all-users');
+                cont.innerHTML = '<h3>Учасники</h3>';
+                snap.forEach(d => {
+                    const u = d.data();
+                    cont.innerHTML += `<div class="post-card">${u.displayName} (${u.city})</div>`;
                 });
             });
         }
