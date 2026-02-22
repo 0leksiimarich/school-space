@@ -8,8 +8,8 @@ const firebaseConfig = {
   projectId: "schoolspace-53f0d",
   storageBucket: "schoolspace-53f0d.firebasestorage.app",
   messagingSenderId: "832888496203",
-  appId: "1:832888496203:web:3377bfcd63cc277c86edce",
-  measurementId: "G-CCD219H76Y"
+  appId: "1:832888496203:web:237bc6c641b72b2886edce",
+  measurementId: "G-83DE80YW9R"
 };
 
 const app = initializeApp(firebaseConfig);
